@@ -78,21 +78,57 @@ httpServer
 		});
 	})
 	.get('/deals/history', function(req, res){
-		var pageNum = (req.params.pageNum || 0);
-		var sinceDate = (req.params.sinceDate || Date.now() - (60 * 60 * 24 * 7 * 4 * 1000));
-		var properties = (req.params.properties || '').split(',');
-		HubAPIRequest(req, {
-			method: 'GET',
-			url: 'https://api.hubapi.com/deals/v1/deal/recent/created',
-			qs: {
-				count: 100,
-				offset: pageNum,
-				since: sinceDate,
-				includePropertyVersions: true
+		var sinceDate = (req.query.sinceDate || Date.now() - (60 * 60 * 24 * 7 * 4 * 1000));
+		var properties = (req.query.properties || '').split(',');
+		var offset = 0;
+		var response = {
+			sinceDate: sinceDate,
+			properties: properties,
+			numPages: 0,
+			total: 0,
+			deals: []
+		}
+
+		loadMoreDeals();
+
+		function loadMoreDeals(){
+			HubAPIRequest(req, {
+				method: 'GET',
+				url: 'https://api.hubapi.com/deals/v1/deal/recent/created',
+				qs: {
+					count: 2,
+					offset: offset,
+					since: sinceDate,
+					includePropertyVersions: true
+				}
+			}, function(apiResponse){
+				if(!apiResponse.success){
+					res.json(apiResponse);
+				}else{
+					response.numPages += 1;
+					response.total = apiResponse.body.total;
+					apiResponse.body.results.forEach(appendDeal);
+					if(apiResponse.body.hasMore){
+						offset = apiResponse.body.offset;
+						loadMoreDeals();
+					}else{
+						res.json(response);
+					}
+				}
+			});
+		}
+
+		function appendDeal(deal){
+			var output = {
+				dealId: deal.dealId
+			};
+			for(var i = 0, l = properties.length; i < l; i++){
+				var propertyName = properties[i];
+				var value = (deal.properties[propertyName] || {}).value;
+				output[propertyName] = value;
 			}
-		}, function(result){
-			res.json(result);
-		});
+			response.deals.push(output);
+		}
 	})
 	.use('/', express.static('./public'));
 
