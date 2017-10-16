@@ -77,6 +77,23 @@ httpServer
 			res.json(result);
 		});
 	})
+	.get('/deals/history', function(req, res){
+		var pageNum = (req.params.pageNum || 0);
+		var sinceDate = (req.params.sinceDate || Date.now() - (60 * 60 * 24 * 7 * 4 * 1000));
+		var properties = (req.params.properties || '').split(',');
+		HubAPIRequest(req, {
+			method: 'GET',
+			url: 'https://api.hubapi.com/deals/v1/deal/recent/created',
+			qs: {
+				count: 100,
+				offset: pageNum,
+				since: sinceDate,
+				includePropertyVersions: true
+			}
+		}, function(result){
+			res.json(result);
+		});
+	})
 	.use('/', express.static('./public'));
 
 
@@ -95,13 +112,11 @@ function HubAPIRequest(req, params, callback){
 		};
 		if(error || result.statusCode >= 400){
 			result.success = false;
-			result.body = error;
-		}else{
-			try{
-				result.body = JSON.parse(body || '{}');
-			}catch(e){
-				result.body = body;
-			}
+		}
+		try{
+			result.body = JSON.parse(body || '{}');
+		}catch(e){
+			result.body = (error || body);
 		}
 		callback(result);
 	});
