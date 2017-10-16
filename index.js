@@ -69,4 +69,40 @@ httpServer
 			res.redirect('/authorize');
 		}
 	})
+	.get('/deals/properties', function(req, res){
+		HubAPIRequest(req, {
+			method: 'GET',
+			url: 'https://api.hubapi.com/properties/v1/deals/properties'
+		}, function(result){
+			res.json(result);
+		});
+	})
 	.use('/', express.static('./public'));
+
+
+function HubAPIRequest(req, params, callback){
+	if(process.env['NODE_ENV'] == 'development'){
+		params.qs = (params.qs || {})
+		params.qs['hapikey'] = ENV['HAPIKEY'];
+	}else if(process.env['NODE_ENV'] == 'production'){
+		params.headers = (params.headers || {});
+		params.headers['Authorization'] = 'Bearer ' + req.cookies['access_token'];
+	}
+	request(params, function(error, response, body){
+		var result = {
+			success: true,
+			statusCode: response.statusCode
+		};
+		if(error || result.statusCode >= 400){
+			result.success = false;
+			result.body = error;
+		}else{
+			try{
+				result.body = JSON.parse(body || '{}');
+			}catch(e){
+				result.body = body;
+			}
+		}
+		callback(result);
+	});
+}
