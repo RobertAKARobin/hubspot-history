@@ -58,6 +58,10 @@ httpServer
 			}
 		});
 	})
+	.get('/authorize/clear', function(req, res){
+		res.clearCookie('access_token');
+		res.redirect('/');
+	})
 	.get('*', function(req, res, next){
 		if(process.env['NODE_ENV'] == 'development' || req.cookies['access_token']){
 			next();
