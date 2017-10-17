@@ -74,21 +74,15 @@ var Controls = (function(){
 		properties: (Location.query().properties || '').split(',')
 	}
 
-	return {
-		oninit: function(){
-			m.request({
-				method: 'GET',
-				url: './deals/properties'
-			}).then(function(properties){
-				DealProperties = Object.values(properties).sortOn(function(item){
-					return (item.name || item.label);
-				});
-			});
-		},
-		view: function(){
+	var state = {
+		isLoaded: false
+	}
+
+	var views = {
+		controls: function(){
 			return [
 				m('label', [
-					m('span', "Take a snapshot of Hubspot's Deals on which date?"),
+					m('span', "Take a snapshot of what date?"),
 					m('div.numbers', [
 						m('input[type=number]', m.input(Input.year).merge({
 							min: 2012,
@@ -134,10 +128,34 @@ var Controls = (function(){
 						event.redraw = false;
 						Input.properties = Input.properties.join(',');
 						Location.query(Input);
-						window.open('./deals/history.tsv' + window.location.search);
+						window.open('./deals/snapshot.tsv' + window.location.search);
 					}
-				}, 'Download to Excel-friendly Format')
+				}, 'Download'),
+				m('p', 'Download may take 10+ seconds.')
 			]
+		}
+	}
+
+	return {
+		oninit: function(){
+			m.request({
+				method: 'GET',
+				url: './deals/properties'
+			}).then(function(properties){
+				DealProperties = Object.values(properties).sortOn(function(item){
+					return (item.name || item.label);
+				});
+				state.isLoaded = true;
+			});
+		},
+		view: function(){
+			if(state.isLoaded){
+				return views.controls()
+			}else{
+				return [
+					m('p', 'Loading...')
+				]
+			}
 		}
 	}
 

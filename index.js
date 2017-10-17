@@ -103,7 +103,7 @@ httpServer
 			res.json(DealProperties);
 		});
 	})
-	.get('/deals/history\.:format?', function(req, res){
+	.get('/deals/snapshot\.:format?', function(req, res){
 		var Today = (new Date()).toArray();
 		var snapshotDate = new Date(
 			(parseInt(req.query.year) || Today[0]),
