@@ -78,56 +78,83 @@ httpServer
 		});
 	})
 	.get('/deals/history', function(req, res){
-		var sinceDate = (req.query.sinceDate || Date.now() - (60 * 60 * 24 * 7 * 4 * 1000));
+		var snapshotDate = Math.min(Date.now(), parseInt(req.query.snapshotDate || Date.now())) ;
 		var properties = (req.query.properties || '').split(',');
-		var offset = 0;
-		var response = {
-			sinceDate: sinceDate,
-			properties: properties,
-			numPages: 0,
-			total: 0,
-			deals: []
+		if(!properties.includes('createdate')){
+			properties.push('createdate');
 		}
+		var offset = 0;
+		var outputDeals = [];
+		var numDealsTotal = 0;
+		var numPages = 0;
+		var numPerPage = 250;
 
 		loadMoreDeals();
 
 		function loadMoreDeals(){
 			HubAPIRequest(req, {
 				method: 'GET',
-				url: 'https://api.hubapi.com/deals/v1/deal/recent/created',
+				url: 'https://api.hubapi.com/deals/v1/deal/paged',
+				qsStringifyOptions: {
+					arrayFormat: 'repeat'
+				},
 				qs: {
-					count: 2,
+					limit: numPerPage,
 					offset: offset,
-					since: sinceDate,
-					includePropertyVersions: true
+					properties: properties,
+					propertiesWithHistory: true
 				}
 			}, function(apiResponse){
 				if(!apiResponse.success){
 					res.json(apiResponse);
 				}else{
-					response.numPages += 1;
-					response.total = apiResponse.body.total;
-					apiResponse.body.results.forEach(appendDeal);
+					numPages += 1;
+					numDealsTotal += apiResponse.body.deals.length;
+					apiResponse.body.deals.forEach(appendDeal);
 					if(apiResponse.body.hasMore){
 						offset = apiResponse.body.offset;
+						console.log(offset);
 						loadMoreDeals();
 					}else{
-						res.json(response);
+						res.json({
+							snapshotDate: snapshotDate,
+							properties: properties,
+							numPages: numPages,
+							numPerPage: numPerPage,
+							numDealsTotal: numDealsTotal,
+							deals: outputDeals,
+							numDealsOutput: outputDeals.length
+						});
 					}
 				}
 			});
 		}
 
 		function appendDeal(deal){
+			var pIndex, versions, vIndex, version;
 			var output = {
-				dealId: deal.dealId
+				dealId: deal.dealId,
+				createdate: deal.properties.createdate.value
 			};
-			for(var i = 0, l = properties.length; i < l; i++){
-				var propertyName = properties[i];
-				var value = (deal.properties[propertyName] || {}).value;
-				output[propertyName] = value;
+			if(output.createdate > snapshotDate){
+				return;
 			}
-			response.deals.push(output);
+			for(pIndex = 0; pIndex < properties.length; pIndex++){
+				propertyName = properties[pIndex];
+				if(!deal.properties[propertyName]){
+					output[propertyName] = '';
+				}else{
+					versions = deal.properties[propertyName].versions;
+					for(vIndex = 0; vIndex < versions.length; vIndex++){
+						version = versions[vIndex];
+						if(version.timestamp <= snapshotDate){
+							output[propertyName] = version.value
+							break;
+						}
+					}
+				}
+			}
+			outputDeals.push(output);
 		}
 	})
 	.use('/', express.static('./public'));
