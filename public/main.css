@@ -1,0 +1,15 @@
+label, button{
+	display:block;
+	margin: 20px 0;
+}
+select{
+	display:block;
+	height:300px;
+	resize:vertical;
+}
+input{
+	display:block;
+}
+.numbers input{
+	display:inline-block;
+}
