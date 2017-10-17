@@ -104,7 +104,13 @@ httpServer
 		});
 	})
 	.get('/deals/history\.:format?', function(req, res){
-		var snapshotDate = Math.min(Date.now(), parseInt(req.query.snapshotDate || Date.now()));
+		var Today = (new Date()).toArray();
+		var snapshotDate = new Date(
+			(parseInt(req.query.year) || Today[0]),
+			(parseInt(req.query.month) || Today[1]),
+			(parseInt(req.query.day) || Today[2])
+		);
+		var year = (parseInt(req.query.year) || Today[0]);
 		var properties = (req.query.properties || '').split(',');
 		properties
 			.addIfDoesNotInclude('createdate')
@@ -135,7 +141,7 @@ httpServer
 				var csvString;
 				var dIndex, deal, pIndex, propertyName, propertyValue;
 				var delim = '\t';
-				var filename = 'deals_snapshot_' + (new Date(snapshotDate)).toArray().join('-') + '.tsv';
+				var filename = 'deals_snapshot_' + snapshotDate.toArray().join('-') + '.tsv';
 				output.push(properties.join(delim));
 				for(dIndex = 0; dIndex < outputDeals.length; dIndex += 1){
 					deal = [];

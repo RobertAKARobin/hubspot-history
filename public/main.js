@@ -39,6 +39,18 @@ Object.defineProperty(Object.prototype, 'merge', {
 		return input;
 	}
 })
+Location.query = function(paramsObject){
+	var query = m.parseQueryString((window.location.href.match(/\?.*?$/g) || [])[0]);
+	var newurl = window.location.origin + window.location.pathname;
+	if(paramsObject){
+		for(var key in paramsObject){
+			query[key] = paramsObject[key];
+		}
+		newurl += '?' + m.buildQueryString(query);
+		window.history.pushState({path: newurl}, '', newurl);
+	}
+	return query;
+}
 m.input = function(stream){
 	return {
 		value: stream(),
@@ -56,9 +68,9 @@ var Controls = (function(){
 	var Today = (new Date()).toArray();
 
 	var Input = {
-		year: m.stream(Today[0]),
-		month: m.stream(Today[1]),
-		day: m.stream(Today[2]),
+		year: m.stream(Location.query().year || Today[0]),
+		month: m.stream(Location.query().month || Today[1]),
+		day: m.stream(Location.query().day || Today[2]),
 		properties: []
 	}
 
@@ -76,7 +88,7 @@ var Controls = (function(){
 		view: function(){
 			return [
 				m('label', [
-					m('span', "You want to go back in time and see how Hubspot's Deals looked on which date?"),
+					m('span', "Take a snapshot of Hubspot's Deals on which date?"),
 					m('div.numbers', [
 						m('input[type=number]', m.input(Input.year).merge({
 							min: 2012,
@@ -96,7 +108,7 @@ var Controls = (function(){
 					])
 				]),
 				m('label', [
-					m('span', "Which properties do you want to download? Pick multiple by holding 'Shift' while you click."),
+					m('span', "Which Deal properties should be included in the snapshot? Pick multiple by holding 'Shift' while you click."),
 					m('select', {
 						multiple: true,
 						onchange: function(event){
@@ -119,7 +131,9 @@ var Controls = (function(){
 				m('button', {
 					onclick: function(event){
 						event.redraw = false;
-						console.log(JSON.stringify(Input))
+						Input.properties = Input.properties.join(',');
+						Location.query(Input);
+						window.open('./deals/history.tsv' + window.location.search);
 					}
 				}, 'Download to Excel-friendly Format')
 			]
