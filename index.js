@@ -18,6 +18,14 @@ if(process.env['NODE_ENV'] == 'production'){
 var httpServer = express();
 var baseServer = http.createServer(httpServer);
 
+Array.prototype.addIfDoesNotInclude = function(item){
+	var array = this;
+	if(array.indexOf(item) < 0){
+		array.push(item);
+	}
+	return array;
+}
+
 baseServer
 	.listen(ENV.PORT, function(){
 		console.log(Date().toLocaleString())
@@ -80,9 +88,9 @@ httpServer
 	.get('/deals/history', function(req, res){
 		var snapshotDate = Math.min(Date.now(), parseInt(req.query.snapshotDate || Date.now())) ;
 		var properties = (req.query.properties || '').split(',');
-		if(!properties.includes('createdate')){
-			properties.push('createdate');
-		}
+		properties
+			.addIfDoesNotInclude('createdate')
+			.addIfDoesNotInclude('dealname');
 		var offset = 0;
 		var outputDeals = [];
 		var numDealsTotal = 0;
