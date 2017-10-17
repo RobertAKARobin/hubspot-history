@@ -71,7 +71,7 @@ var Controls = (function(){
 		year: m.stream(Location.query().year || Today[0]),
 		month: m.stream(Location.query().month || Today[1]),
 		day: m.stream(Location.query().day || Today[2]),
-		properties: []
+		properties: (Location.query().properties || '').split(',')
 	}
 
 	return {
@@ -124,7 +124,8 @@ var Controls = (function(){
 						}
 					}, DealProperties.map(function(property){
 						return m('option', {
-							value: property.name
+							value: property.name,
+							selected: Input.properties.includes(property.name)
 						}, property.label || property.name)
 					}))
 				]),
