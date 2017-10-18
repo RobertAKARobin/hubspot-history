@@ -268,6 +268,7 @@ function HubAPIRequest(req, params, callback){
 			success: true,
 			statusCode: response.statusCode
 		};
+		console.log(response.statusCode);
 		if(error || result.statusCode >= 400){
 			result.success = false;
 		}
