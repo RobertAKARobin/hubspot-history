@@ -8,7 +8,9 @@ var querystring = require('querystring');
 var cookieParser = require('cookie-parser');
 var path = require('path');
 
-var HS = require('./hubapi');
+var HS = {
+	authorize: require('./hs.auth')
+}
 require('./public/helpers');
 
 if(process.env['NODE_ENV'] != 'production'){
@@ -31,42 +33,9 @@ baseServer
 httpServer
 	.use(cookieParser())
 	.use(bodyParser.json())
-	.get('/authorize', function(req, res){
-		res.redirect('https://app.hubspot.com/oauth/authorize?' + querystring.stringify({
-			client_id: process.env['CLIENT_ID'],
-			redirect_uri: process.env['REDIRECT_URI'],
-			scope: 'contacts'
-		}));
-	})
-	.get('/authorize/redirect', function(req, res){
-		var requestToken = req.query.code;
-		request({
-			method: 'POST',
-			url: 'https://api.hubapi.com/oauth/v1/token',
-			headers: {
-				'Content-Type': 'application/x-www-form-urlencoded;charset=utf-8'
-			},
-			form: {
-				grant_type: 'authorization_code',
-				client_id: process.env['CLIENT_ID'],
-				client_secret: process.env['CLIENT_SECRET'],
-				redirect_uri: process.env['REDIRECT_URI'],
-				code: requestToken
-			}
-		}, function(error, response, body){
-			if(error){
-				res.clearCookie('access_token');
-				res.redirect('/authorize');
-			}else{
-				res.cookie('access_token', JSON.parse(body)['access_token']);
-				res.redirect('/');
-			}
-		});
-	})
-	.get('/authorize/reset', function(req, res){
-		res.clearCookie('access_token');
-		res.redirect('/authorize');
-	})
+	.get('/authorize', HS.authorize.init)
+	.get('/authorize/redirect', HS.authorize.redirect)
+	.get('/authorize/reset', HS.authorize.reset)
 	.get('*', function(req, res, next){
 		if(process.env['NODE_ENV'] == 'development' || req.cookies['access_token']){
 			next();
