@@ -42,32 +42,37 @@ function APIRequest(params){
 }
 
 module.exports = {
-	properties: [
-		APIRequest({
-			method: 'GET',
-			url: BaseURL + 'deals/properties'
-		}),
-		function(req, res, next){
-			var properties = res.apiResponse.body;
-			var pIndex, property;
-			var output = {};
-			for(pIndex = 0; pIndex < properties.length; pIndex++){
-				property = properties[pIndex];
-				output[property.name] = {
-					name: property.name,
-					label: property.label,
-					type: property.type,
-					fieldType: property.fieldType
-				};
+	properties: function(){
+		return [
+			APIRequest({
+				method: 'GET',
+				url: BaseURL + 'deals/properties'
+			}),
+			function(req, res, next){
+				var properties = res.apiResponse.body;
+				var pIndex, property;
+				var output = {};
+				for(pIndex = 0; pIndex < properties.length; pIndex++){
+					property = properties[pIndex];
+					output[property.name] = {
+						name: property.name,
+						label: property.label,
+						type: property.type,
+						fieldType: property.fieldType
+					};
+				}
+				output['dealId'] = {
+					name: 'dealId',
+					label: 'Deal ID',
+					type: 'number',
+					fieldType: 'number'
+				}
+				res.properties = output;
+				next();
 			}
-			output['dealId'] = {
-				name: 'dealId',
-				label: 'Deal ID',
-				type: 'number',
-				fieldType: 'number'
-			}
-			res.dealProperties = output;
-			next();
-		}
-	]
+		]
+	},
+	deals: function(req, res, next){
+
+	}
 }
