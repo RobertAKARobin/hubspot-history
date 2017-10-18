@@ -146,11 +146,7 @@ httpServer
 					DealStages[stage.stageId] = stage.label;
 				}
 			});
-			if(req.query.refresh){
-				res.redirect('/');
-			}else{
-				res.json(DealProperties);
-			}
+			res.json(DealProperties);
 		})
 	})
 	.get('/deals/snapshot\.:format?', function(req, res){

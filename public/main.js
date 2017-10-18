@@ -69,11 +69,16 @@ var Controls = (function(){
 		isLoaded: false
 	}
 
-	var refreshDeals = function(){
+	var refreshDeals = function(forceRefresh){
+		var queryString = {};
+		if(forceRefresh){
+			queryString.refresh = true;
+		}
 		state.isLoaded = false;
 		m.request({
 			method: 'GET',
-			url: './deals/properties'
+			url: './deals/properties',
+			data: queryString
 		}).then(function(response){
 			if(response.statusCode == 401){
 				location.href = "/authorize/reset";
@@ -124,7 +129,9 @@ var Controls = (function(){
 				m('span', [
 					"Which Deal properties should be included in the snapshot? Pick multiple by holding 'Shift' while you click. ",
 					m('a', {
-						onclick: refreshDeals
+						onclick: function(){
+							refreshDeals(true);
+						}
 					}, 'Refresh the list')
 				]),
 				m('select', {
