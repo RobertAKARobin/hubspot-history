@@ -51,15 +51,6 @@ Location.query = function(paramsObject){
 	}
 	return query;
 }
-m.input = function(stream){
-	return {
-		value: stream(),
-		oninput: function(event){
-			event.redraw = false;
-			stream(event.target.value);
-		}
-	}
-}
 
 var Controls = (function(){
 
@@ -79,22 +70,32 @@ var Controls = (function(){
 	}
 
 	var views = {
+		input: function(stream){
+			return {
+				value: stream(),
+				oninput: function(event){
+					event.redraw = false;
+					stream(event.target.value);
+					Location.query(Input);
+				}
+			}
+		},
 		controls: function(){
 			return [
 				m('label', [
-					m('span', "Take a snapshot of what date?"),
+					m('span', "Take a snapshot of what date? (Y/M/D)"),
 					m('div.numbers', [
-						m('input[type=number]', m.input(Input.year).merge({
+						m('input[type=number]', views.input(Input.year).merge({
 							min: 2012,
 							max: 2022,
 							placeholder: 'YYYY'
 						})),
-						m('input[type=number]', m.input(Input.month).merge({
+						m('input[type=number]', views.input(Input.month).merge({
 							min: 1,
 							max: 12,
 							placeholder: 'MM'
 						})),
-						m('input[type=number]', m.input(Input.day).merge({
+						m('input[type=number]', views.input(Input.day).merge({
 							min: 1,
 							max: 31,
 							placeholder: 'DD'
@@ -109,12 +110,14 @@ var Controls = (function(){
 							event.redraw = false;
 							var select = event.target;
 							var options = select.options;
-							Input.properties = [];
+							var properties = [];
 							for(var i = 0; i < options.length; i++){
 								if(options[i].selected){
-									Input.properties.push(options[i].value);
+									properties.push(options[i].value);
 								}
 							}
+							Input.properties = properties.join(',');
+							Location.query(Input);
 						}
 					}, DealProperties.map(function(property){
 						return m('option', {
@@ -123,15 +126,15 @@ var Controls = (function(){
 						}, property.label || property.name)
 					}))
 				]),
-				m('button', {
-					onclick: function(event){
-						event.redraw = false;
-						Input.properties = Input.properties.join(',');
-						Location.query(Input);
-						window.open('./deals/snapshot.tsv' + window.location.search);
-					}
-				}, 'Download'),
-				m('p', 'Download may take 10+ seconds.')
+				m('label', [
+					m('span', 'May take 10+ seconds.'),
+					m('button', {
+						onclick: function(event){
+							event.redraw = false;
+							window.open('./deals/snapshot.tsv' + window.location.search);
+						}
+					}, 'Download')
+				])
 			]
 		}
 	}
@@ -157,7 +160,7 @@ var Controls = (function(){
 				return views.controls()
 			}else{
 				return [
-					m('p', 'Loading...')
+					m('p', 'Loading Deal properties...')
 				]
 			}
 		}
