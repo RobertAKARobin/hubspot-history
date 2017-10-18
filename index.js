@@ -20,6 +20,7 @@ if(process.env['NODE_ENV'] == 'production'){
 var httpServer = express();
 var baseServer = http.createServer(httpServer);
 var DealProperties = undefined;
+var DealStages = undefined;
 
 Array.prototype.addIfDoesNotInclude = function(item){
 	var array = this;
@@ -87,29 +88,70 @@ httpServer
 	})
 	.get('*', function(req, res, next){
 		if(process.env['NODE_ENV'] == 'development' || req.cookies['access_token']){
-			if(DealProperties == undefined){
-				loadDealProperties(req, function(result){
-					if(result.statusCode == 401){
-						res.redirect('/authorize/reset');
-					}else{
-						return next();
-					}
-				});
-			}else{
-				return next();
-			}
+			next();
 		}else{
 			return res.redirect('/authorize');
 		}
 	})
-	.get('/deals/properties', function(req, res){
-		loadDealProperties(req, function(result){
+	.get('/deals/properties', function(req, res, next){
+		if(!req.query.refresh && DealProperties){
+			return res.json(DealProperties);
+		}
+		HubAPIRequest(req, {
+			method: 'GET',
+			url: 'https://api.hubapi.com/properties/v1/deals/properties'
+		}, function(result){
 			if(result.statusCode == 401){
 				return res.json(result);
-			}else{
-				return res.json(DealProperties);
 			}
+			DealProperties = {};
+			var pIndex, property;
+			for(pIndex = 0; pIndex < result.body.length; pIndex++){
+				property = result.body[pIndex];
+				DealProperties[property.name] = {
+					name: property.name,
+					label: property.label,
+					type: property.type,
+					fieldType: property.fieldType
+				};
+			}
+			DealProperties['dealId'] = {
+				name: 'dealId',
+				label: 'Deal ID',
+				type: 'number',
+				fieldType: 'number'
+			}
+			next();
 		});
+	}, function(req, res){
+		HubAPIRequest(req, {
+			method: 'GET',
+			url: 'https://api.hubapi.com/deals/v1/pipelines'
+		}, function(result){
+			if(result.statusCode == 401){
+				if(req.query.refresh){
+					return res.redirect('/authorize/reset');
+				}else{
+					return res.json(result);
+				}
+			}
+			DealStages = {};
+			result.body.forEach(function(pipeline){
+				var stage;
+				if(pipeline.pipelineId != 'default'){
+					return;
+				}
+				for(var i = 0; i < pipeline.stages.length; i++){
+					stage = pipeline.stages[i];
+					DealStages[stage.stageId] = stage.label;
+				}
+			});
+			if(req.query.refresh){
+				res.redirect('/');
+			}else{
+				res.json(DealProperties);
+			}
+		})
 	})
 	.get('/deals/snapshot\.:format?', function(req, res){
 		var Today = (new Date()).toArray();
@@ -161,7 +203,9 @@ httpServer
 						propertyValue = outputDeals[dIndex][propertyName];
 						propertyType = DealProperties[propertyName].type;
 						if(propertyValue){
-							if(propertyType == 'date' || propertyType == 'datetime'){
+							if(propertyName == 'dealstage'){
+								propertyValue = DealStages[propertyValue];
+							}else if(propertyType == 'date' || propertyType == 'datetime'){
 								propertyValue = (new Date(parseInt(propertyValue))).toArray().join('-');
 							}else if(propertyType == 'string'){
 								propertyValue = propertyValue.replace('\t', ' ');
@@ -246,32 +290,6 @@ httpServer
 		}
 	})
 	.use('/', express.static('./public'));
-
-function loadDealProperties(req, callback){
-	HubAPIRequest(req, {
-		method: 'GET',
-		url: 'https://api.hubapi.com/properties/v1/deals/properties'
-	}, function(result){
-		DealProperties = {};
-		var pIndex, property;
-		for(pIndex = 0; pIndex < result.body.length; pIndex++){
-			property = result.body[pIndex];
-			DealProperties[property.name] = {
-				name: property.name,
-				label: property.label,
-				type: property.type,
-				fieldType: property.fieldType
-			};
-		}
-		DealProperties['dealId'] = {
-			name: 'dealId',
-			label: 'Deal ID',
-			type: 'number',
-			fieldType: 'number'
-		}
-		callback(result);
-	});
-}
 
 function HubAPIRequest(req, params, callback){
 	if(process.env['NODE_ENV'] == 'development'){

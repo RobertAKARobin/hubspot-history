@@ -45,6 +45,10 @@ h2{
 	font-family:"Roboto Slab", Palatino, serif;
 	font-weight:bold;
 }
+a{
+	text-decoration:underline;
+	color:blue;
+}
 p{
 	display:block;
 	margin:10px auto;
