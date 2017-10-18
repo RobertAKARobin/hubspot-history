@@ -146,10 +146,11 @@ httpServer
 		loadMoreDeals();
 
 		function onComplete(){
+			properties.unshift('dealId');
 			if(req.params.format == 'tsv'){
 				var output = [];
 				var csvString;
-				var dIndex, deal, pIndex, propertyName, propertyValue;
+				var dIndex, deal, pIndex, propertyName, propertyValue, propertyType;
 				var delim = '\t';
 				var filename = 'deals_snapshot_' + snapshotDate.toArray().join('-') + '.tsv';
 				output.push(properties.join(delim));
@@ -158,8 +159,13 @@ httpServer
 					for(pIndex = 0; pIndex < properties.length; pIndex += 1){
 						propertyName = properties[pIndex];
 						propertyValue = outputDeals[dIndex][propertyName];
-						if(propertyValue && ['date', 'datetime'].includes(DealProperties[propertyName].type)){
-							propertyValue = (new Date(parseInt(propertyValue))).toArray().join('-');
+						propertyType = DealProperties[propertyName].type;
+						if(propertyValue){
+							if(propertyType == 'date' || propertyType == 'datetime'){
+								propertyValue = (new Date(parseInt(propertyValue))).toArray().join('-');
+							}else if(propertyType == 'string'){
+								propertyValue = propertyValue.replace('\t', ' ');
+							}
 						}
 						deal.push(propertyValue);
 					}
@@ -214,11 +220,8 @@ httpServer
 
 		function appendDeal(deal){
 			var pIndex, propertyName, propertyType, versions, vIndex, version;
-			var output = {
-				dealId: deal.dealId,
-				createdate: deal.properties.createdate.value
-			};
-			if(output.createdate > snapshotDate){
+			var output = {};
+			if(deal.properties.createdate.value > snapshotDate){
 				return;
 			}
 			for(pIndex = 0; pIndex < properties.length; pIndex++){
@@ -238,6 +241,7 @@ httpServer
 					}
 				}
 			}
+			output.dealId = deal.dealId;
 			outputDeals.push(output);
 		}
 	})
@@ -255,10 +259,15 @@ function loadDealProperties(req, callback){
 			DealProperties[property.name] = {
 				name: property.name,
 				label: property.label,
-				groupName: property.groupName,
 				type: property.type,
 				fieldType: property.fieldType
 			};
+		}
+		DealProperties['dealId'] = {
+			name: 'dealId',
+			label: 'Deal ID',
+			type: 'number',
+			fieldType: 'number'
 		}
 		callback(result);
 	});
