@@ -7,13 +7,13 @@ var http = require('http');
 var querystring = require('querystring');
 var cookieParser = require('cookie-parser');
 var path = require('path');
+
+var HS = require('./hubapi');
 require('./public/helpers');
 
-if(process.env['NODE_ENV'] == 'production'){
-	var ENV = process.env;
-}else{
-	var ENV = require('./env.json');
-	ENV.PORT = 3000;
+if(process.env['NODE_ENV'] != 'production'){
+	require('dotenv').config();
+	process.env.PORT = 3000;
 	process.env['NODE_ENV'] = 'development';
 	console.log('Dev environment');
 }
@@ -24,7 +24,7 @@ var DealProperties = undefined;
 var DealStages = undefined;
 
 baseServer
-	.listen(ENV.PORT, function(){
+	.listen(process.env.PORT, function(){
 		console.log(Date().toLocaleString())
 	});
 
@@ -33,8 +33,8 @@ httpServer
 	.use(bodyParser.json())
 	.get('/authorize', function(req, res){
 		res.redirect('https://app.hubspot.com/oauth/authorize?' + querystring.stringify({
-			client_id: ENV['CLIENT_ID'],
-			redirect_uri: ENV['REDIRECT_URI'],
+			client_id: process.env['CLIENT_ID'],
+			redirect_uri: process.env['REDIRECT_URI'],
 			scope: 'contacts'
 		}));
 	})
@@ -48,9 +48,9 @@ httpServer
 			},
 			form: {
 				grant_type: 'authorization_code',
-				client_id: ENV['CLIENT_ID'],
-				client_secret: ENV['CLIENT_SECRET'],
-				redirect_uri: ENV['REDIRECT_URI'],
+				client_id: process.env['CLIENT_ID'],
+				client_secret: process.env['CLIENT_SECRET'],
+				redirect_uri: process.env['REDIRECT_URI'],
 				code: requestToken
 			}
 		}, function(error, response, body){
@@ -271,7 +271,7 @@ httpServer
 function HubAPIRequest(req, params, callback){
 	if(process.env['NODE_ENV'] == 'development'){
 		params.qs = (params.qs || {})
-		params.qs['hapikey'] = ENV['HAPIKEY'];
+		params.qs['hapikey'] = process.env['HAPIKEY'];
 	}else if(process.env['NODE_ENV'] == 'production'){
 		params.headers = (params.headers || {});
 		params.headers['Authorization'] = 'Bearer ' + req.cookies['access_token'];
