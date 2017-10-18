@@ -7,6 +7,7 @@ var http = require('http');
 var querystring = require('querystring');
 var cookieParser = require('cookie-parser');
 var path = require('path');
+require('./public/helpers');
 
 if(process.env['NODE_ENV'] == 'production'){
 	var ENV = process.env;
@@ -21,26 +22,6 @@ var httpServer = express();
 var baseServer = http.createServer(httpServer);
 var DealProperties = undefined;
 var DealStages = undefined;
-
-Array.prototype.addIfDoesNotInclude = function(item){
-	var array = this;
-	if(array.indexOf(item) < 0){
-		array.push(item);
-	}
-	return array;
-}
-Date.prototype.getMonthWithZeroes = function(){
-	var date = this;
-	return ('0' + (date.getMonth()+1)).slice(-2);
-}
-Date.prototype.getDateWithZeroes = function(){
-	var date = this;
-	return ('0' + date.getDate()).slice(-2);
-}
-Date.prototype.toArray = function(){
-	var date = this;
-	return [date.getFullYear(), date.getMonthWithZeroes(), date.getDateWithZeroes()];
-}
 
 baseServer
 	.listen(ENV.PORT, function(){
