@@ -119,7 +119,9 @@ httpServer
 			(parseInt(req.query.day) || Today[2])
 		);
 		var year = (parseInt(req.query.year) || Today[0]);
-		var properties = (req.query.properties || '').split(',');
+
+		var properties = (req.query.properties || '').trim();
+		properties = (properties ? properties.split(',') : []);
 		properties
 			.addIfDoesNotInclude('createdate')
 			.addIfDoesNotInclude('dealname');
