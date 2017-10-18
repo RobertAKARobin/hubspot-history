@@ -141,11 +141,15 @@ var Controls = (function(){
 			m.request({
 				method: 'GET',
 				url: './deals/properties'
-			}).then(function(properties){
-				DealProperties = Object.values(properties).sortOn(function(item){
-					return (item.name || item.label);
-				});
-				state.isLoaded = true;
+			}).then(function(response){
+				if(response.statusCode == 401){
+					location.href = "/authorize/reset";
+				}else{
+					DealProperties = Object.values(response).sortOn(function(item){
+						return (item.name || item.label);
+					});
+					state.isLoaded = true;
+				}
 			});
 		},
 		view: function(){

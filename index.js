@@ -81,26 +81,34 @@ httpServer
 			}
 		});
 	})
-	.get('/authorize/clear', function(req, res){
+	.get('/authorize/reset', function(req, res){
 		res.clearCookie('access_token');
-		res.redirect('/');
+		res.redirect('/authorize');
 	})
 	.get('*', function(req, res, next){
 		if(process.env['NODE_ENV'] == 'development' || req.cookies['access_token']){
 			if(DealProperties == undefined){
-				loadDealProperties(req, function(){
-					next();
+				loadDealProperties(req, function(result){
+					if(result.statusCode == 401){
+						res.redirect('/authorize/reset');
+					}else{
+						return next();
+					}
 				});
 			}else{
-				next();
+				return next();
 			}
 		}else{
-			res.redirect('/authorize');
+			return res.redirect('/authorize');
 		}
 	})
 	.get('/deals/properties', function(req, res){
-		loadDealProperties(req, function(){
-			res.json(DealProperties);
+		loadDealProperties(req, function(result){
+			if(result.statusCode == 401){
+				return res.json(result);
+			}else{
+				return res.json(DealProperties);
+			}
 		});
 	})
 	.get('/deals/snapshot\.:format?', function(req, res){
@@ -187,7 +195,7 @@ httpServer
 				}
 			}, function(apiResponse){
 				if(!apiResponse.success){
-					res.json(apiResponse);
+					return res.redirect('/authorize/reset');
 				}else{
 					numPages += 1;
 					numDealsTotal += apiResponse.body.deals.length;
