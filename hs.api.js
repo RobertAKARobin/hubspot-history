@@ -15,13 +15,18 @@ function APIRequest(params){
 		}
 		console.log(params);
 		request(params, function(error, response, body){
+			var isAjaxRequest = (req.headers.accept.indexOf('json') > -1);
 			var result = {
 				success: true,
 				statusCode: response.statusCode
 			};
 			console.log(response.statusCode);
 			if(result.statusCode == 401){
-				return res.redirect('/authorize');
+				if(isAjaxRequest){
+					return res.json(result);
+				}else{
+					return res.redirect('/authorize');
+				}
 			}else if(error || result.statusCode >= 400){
 				result.success = false;
 			}
