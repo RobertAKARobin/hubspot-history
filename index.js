@@ -2,14 +2,13 @@
 
 var express = require('express');
 var bodyParser = require('body-parser');
-var request = require('request');
 var http = require('http');
-var querystring = require('querystring');
 var cookieParser = require('cookie-parser');
 var path = require('path');
 
 var HS = {
-	authorize: require('./hs.auth')
+	authorize: require('./hs.auth'),
+	api: require('./hs.api')
 }
 require('./public/helpers');
 
@@ -43,62 +42,10 @@ httpServer
 			return res.redirect('/authorize');
 		}
 	})
-	.get('/deals/properties', function(req, res, next){
-		if(!req.query.refresh && DealProperties){
-			return res.json(DealProperties);
-		}
-		HubAPIRequest(req, {
-			method: 'GET',
-			url: 'https://api.hubapi.com/properties/v1/deals/properties'
-		}, function(result){
-			if(result.statusCode == 401){
-				return res.json(result);
-			}
-			DealProperties = {};
-			var pIndex, property;
-			for(pIndex = 0; pIndex < result.body.length; pIndex++){
-				property = result.body[pIndex];
-				DealProperties[property.name] = {
-					name: property.name,
-					label: property.label,
-					type: property.type,
-					fieldType: property.fieldType
-				};
-			}
-			DealProperties['dealId'] = {
-				name: 'dealId',
-				label: 'Deal ID',
-				type: 'number',
-				fieldType: 'number'
-			}
-			next();
-		});
-	}, function(req, res){
-		HubAPIRequest(req, {
-			method: 'GET',
-			url: 'https://api.hubapi.com/deals/v1/pipelines'
-		}, function(result){
-			if(result.statusCode == 401){
-				if(req.query.refresh){
-					return res.redirect('/authorize/reset');
-				}else{
-					return res.json(result);
-				}
-			}
-			DealStages = {};
-			result.body.forEach(function(pipeline){
-				var stage;
-				if(pipeline.pipelineId != 'default'){
-					return;
-				}
-				for(var i = 0; i < pipeline.stages.length; i++){
-					stage = pipeline.stages[i];
-					DealStages[stage.stageId] = stage.label;
-				}
-			});
-			res.json(DealProperties);
-		})
-	})
+	.get('/deals/properties',
+		HS.api.properties.get,
+		HS.api.properties.handle
+	)
 	.get('/deals/snapshot\.:format?', function(req, res){
 		var Today = (new Date()).toArray();
 		var snapshotDate = new Date(
