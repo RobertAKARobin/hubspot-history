@@ -35,13 +35,7 @@ httpServer
 	.get('/authorize', HS.authorize.init)
 	.get('/authorize/redirect', HS.authorize.redirect)
 	.get('/authorize/reset', HS.authorize.reset)
-	.get('*', function(req, res, next){
-		if(process.env['NODE_ENV'] == 'development' || req.cookies['access_token']){
-			next();
-		}else{
-			return res.redirect('/authorize');
-		}
-	})
+	.get('*', HS.authorize.check)
 	.get('/deals/properties',
 		HS.api.properties.get,
 		HS.api.properties.handle

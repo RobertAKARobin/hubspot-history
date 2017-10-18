@@ -4,6 +4,13 @@ var querystring = require('querystring');
 var request = require('request');
 
 module.exports = {
+	check: function(req, res, next){
+		if(process.env['NODE_ENV'] == 'development' || req.cookies['access_token']){
+			next();
+		}else{
+			return res.redirect('/authorize');
+		}
+	},
 	init: function(req, res, next){
 		res.redirect('https://app.hubspot.com/oauth/authorize?' + querystring.stringify({
 			client_id: process.env['CLIENT_ID'],
