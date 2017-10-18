@@ -32,13 +32,16 @@ baseServer
 httpServer
 	.use(cookieParser())
 	.use(bodyParser.json())
+	.use('/', express.static('./public'))
 	.get('/authorize', HS.authorize.init)
 	.get('/authorize/redirect', HS.authorize.redirect)
 	.get('/authorize/reset', HS.authorize.reset)
 	.get('*', HS.authorize.check)
 	.get('/deals/properties',
-		HS.api.properties.get,
-		HS.api.properties.handle
+		HS.api.properties,
+		function(req, res, next){
+			res.json(res.dealProperties);
+		}
 	)
 	.get('/deals/snapshot\.:format?', function(req, res){
 		var Today = (new Date()).toArray();
@@ -175,8 +178,7 @@ httpServer
 			output.dealId = deal.dealId;
 			outputDeals.push(output);
 		}
-	})
-	.use('/', express.static('./public'));
+	});
 
 function HubAPIRequest(req, params, callback){
 	if(process.env['NODE_ENV'] == 'development'){

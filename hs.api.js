@@ -37,12 +37,12 @@ function APIRequest(params){
 }
 
 module.exports = {
-	properties: {
-		get: APIRequest({
+	properties: [
+		APIRequest({
 			method: 'GET',
 			url: BaseURL + 'deals/properties'
 		}),
-		handle: function(req, res, next){
+		function(req, res, next){
 			var properties = res.apiResponse.body;
 			var pIndex, property;
 			var output = {};
@@ -61,7 +61,8 @@ module.exports = {
 				type: 'number',
 				fieldType: 'number'
 			}
-			res.json(output);
+			res.dealProperties = output;
+			next();
 		}
-	}
+	]
 }
