@@ -73,6 +73,20 @@ module.exports = {
 			}
 		]
 	},
+	stages: function(){
+		return [
+			APIRequest({
+				method: 'GET',
+				url: 'deals/v1/pipelines/default'
+			}),
+			function(req, res, next){
+				res.stages = res.apiResponse.body.stages.mapToObject(function(object, stage){
+					object[stage.stageId] = stage.label;
+				});
+				next();
+			}
+		]
+	},
 	deals: function(){
 		return [
 			function(req, res, next){
@@ -87,6 +101,7 @@ module.exports = {
 					.addIfDoesNotInclude('dealId')
 					.addIfDoesNotInclude('createdate')
 					.addIfDoesNotInclude('dealname')
+					.addIfDoesNotInclude('dealstage')
 					.intersectionWith(Object.keys(res.properties));
 				
 				req.snapshot = {
@@ -164,6 +179,8 @@ module.exports = {
 					}
 					if(propertyType == 'date' || propertyType == 'datetime'){
 						return (new Date(parseInt(propertyValue))).toArray().join('-');
+					}else if(propertyName == 'dealstage'){
+						return res.stages[propertyValue];
 					}else if(propertyType == 'number'){
 						return parseFloat(propertyValue);
 					}else if(propertyType == 'string'){

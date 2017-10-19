@@ -38,6 +38,14 @@ Array.prototype.intersectionWith = function(comparator){
 	}
 	return output;
 }
+Array.prototype.mapToObject = function(callback){
+	var array = this;
+	var output = {};
+	for(var i = 0; i < array.length; i++){
+		callback(output, array[i]);
+	}
+	return output;
+}
 Date.prototype.getMonthWithZeroes = function(){
 	var date = this;
 	return ('0' + (date.getMonth()+1)).slice(-2);

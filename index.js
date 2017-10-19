@@ -45,6 +45,7 @@ httpServer
 	)
 	.get('/deals/snapshot\.:format?', 
 		HS.api.properties(),
+		HS.api.stages(),
 		HS.api.deals(),
 		function(req, res, next){
 			if(req.params.format == 'tsv'){
