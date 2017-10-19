@@ -1,5 +1,9 @@
 'use strict';
 
+Array.fromCSV = function(string){
+	string = (string || '').trim();
+	return (string ? string.split(',') : []);
+}
 Array.prototype.addIfDoesNotInclude = function(item){
 	var array = this;
 	if(array.indexOf(item) < 0){
@@ -24,6 +28,16 @@ Array.prototype.sortOn = function(sortProperty){
 		}
 	});
 }
+Array.prototype.intersectionWith = function(comparator){
+	var source = this;
+	var output = [];
+	for(var i = 0; i < source.length; i++){
+		if(comparator.indexOf(source[i]) > -1){
+			output.push(source[i]);
+		}
+	}
+	return output;
+}
 Date.prototype.getMonthWithZeroes = function(){
 	var date = this;
 	return ('0' + (date.getMonth()+1)).slice(-2);
@@ -44,5 +58,16 @@ Object.defineProperty(Object.prototype, 'merge', {
 			input[key] = object[key];
 		}
 		return input;
+	}
+})
+Object.defineProperty(Object.prototype, 'extractValuesByKeys', {
+	enumerable: false,
+	value: function(propertiesArray){
+		var object = this;
+		var output = [];
+		for(var i = 0; i < propertiesArray.length; i++){
+			output.push(object[propertiesArray[i]]);
+		}
+		return output;
 	}
 })
