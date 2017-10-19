@@ -46,6 +46,10 @@ Array.prototype.mapToObject = function(callback){
 	}
 	return output;
 }
+Array.prototype.last = function(){
+	var array = this;
+	return (array[array.length - 1]);
+}
 Date.prototype.getMonthWithZeroes = function(){
 	var date = this;
 	return ('0' + (date.getMonth()+1)).slice(-2);
