@@ -88,7 +88,7 @@ var Controls = (function(){
 		properties: function(){
 			return m('label', [
 				m('span', [
-					"Which Deal properties should be included in the snapshot? Pick multiple by holding 'Shift' while you click. ",
+					"Which Deal properties should be included in the snapshot? ",
 					m('a', {
 						onclick: function(){
 							refreshDeals(true);

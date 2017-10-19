@@ -40,6 +40,10 @@ httpServer
 	.get('/deals/properties',
 		HS.api.properties(),
 		function(req, res, next){
+			var defaultProperties = ['createdate', 'dealname', 'dealstage'];
+			defaultProperties.forEach(function(propertyName){
+				delete res.properties[propertyName];
+			});
 			res.json(res.properties);
 		}
 	)
