@@ -51,7 +51,10 @@ httpServer
 			if(req.params.format == 'tsv'){
 				next();
 			}else{
-				res.json(res.deals);
+				res.json({
+					snapshotDate: req.snapshot.date.toArray().join('-'),
+					deals: res.deals
+				});
 			}
 		},
 		function(req, res, next){

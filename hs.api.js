@@ -153,23 +153,22 @@ module.exports = {
 
 				function stripDeal(deal){
 					var output = {};
-					var pIndex, pLength, propertyName, propertyVersions, propertyValue;
+					var pIndex, pLength, propertyName, propertyVersions;
+					var targetVersion;
 					for(pIndex = 0; pIndex < req.snapshot.propertyNames.length; pIndex++){
 						propertyName = req.snapshot.propertyNames[pIndex];
 						propertyVersions = (deal.properties[propertyName] || {}).versions;
-						propertyValue = (propertyVersions || []).reduce(getVersionWithCorrectDate, undefined);
-						output[propertyName] = formatPropertyValue(propertyValue, propertyName);
+						targetVersion = (propertyVersions || []).filter(getCorrectVersion)[0];
+						if(targetVersion){
+							output[propertyName] = formatPropertyValue(targetVersion.value, propertyName);
+						}
 					}
 					output.dealId = deal.dealId;
 					return output;
 				}
 
-				function getVersionWithCorrectDate(accumulator, propertyVersion){
-					if(accumulator !== undefined){
-						return;
-					}else if(propertyVersion.timestamp <= req.snapshot.dateAsNumber){
-						return propertyVersion.value;
-					}
+				function getCorrectVersion(propertyVersion){
+					return (propertyVersion.timestamp <= req.snapshot.dateAsNumber);
 				}
 
 				function formatPropertyValue(propertyValue, propertyName){
