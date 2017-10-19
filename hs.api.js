@@ -101,7 +101,6 @@ module.exports = {
 				req.numPerRequest = 250;
 
 				res.deals = [];
-				res.numRequests = 0;
 
 				loadMoreDeals();
 
@@ -124,8 +123,7 @@ module.exports = {
 
 				function actionAfterAPIResponse(){
 					var apiResponse = res.apiResponse.body;
-					res.numRequests += 1;
-					res.deals = res.deals.concat(apiResponse.deals.map(stripDeal));
+					res.deals = res.deals.concat(apiResponse.deals);
 					if(!apiResponse.hasMore || req.query.limitToFirst){
 						next();
 					}else{
@@ -133,6 +131,10 @@ module.exports = {
 						loadMoreDeals();
 					}
 				}
+			},
+			function(req, res, next){
+				res.deals = res.deals.map(stripDeal);
+				next();
 
 				function stripDeal(deal){
 					var output = {};
@@ -170,81 +172,26 @@ module.exports = {
 						return propertyValue;
 					}
 				}
+			},
+			function(req, res, next){
+				if(req.params.format == 'tsv'){
+					next();
+				}else{
+					res.json(res.deals);
+				}
+			},
+			function(req, res, next){
+				var tsv = res.deals.map(function(deal){
+					return deal.extractValuesByKeys(req.snapshot.propertyNames).join('\t');
+				});
+				var filename = 'deals_snapshot_' + req.snapshot.date.toArray().join('-') + '.tsv';
+
+				tsv.unshift(req.snapshot.propertyNames.join('\t'));
+
+				res.set('Content-Type', 'text/tab-separated-values');
+				res.set('Content-Disposition', 'attachment; filename=' + filename);
+				res.send(tsv.join('\n'));
 			}
 		];
-
-		
-/*
-		// function onComplete(){
-		// 	properties.unshift('dealId');
-		// 	if(req.params.format == 'tsv'){
-		// 		var output = [];
-		// 		var csvString;
-		// 		var dIndex, deal, pIndex, propertyName, propertyValue, propertyType;
-		// 		var delim = '\t';
-		// 		var filename = 'deals_snapshot_' + snapshotDate.toArray().join('-') + '.tsv';
-		// 		output.push(properties.join(delim));
-		// 		for(dIndex = 0; dIndex < outputDeals.length; dIndex += 1){
-		// 			deal = [];
-		// 			for(pIndex = 0; pIndex < properties.length; pIndex += 1){
-		// 				propertyName = properties[pIndex];
-		// 				propertyValue = outputDeals[dIndex][propertyName];
-		// 				propertyType = DealProperties[propertyName].type;
-		// 				if(propertyValue){
-		// 					if(propertyName == 'dealstage'){
-		// 						propertyValue = DealStages[propertyValue];
-		// 					}else if(propertyType == 'date' || propertyType == 'datetime'){
-		// 						propertyValue = (new Date(parseInt(propertyValue))).toArray().join('-');
-		// 					}else if(propertyType == 'string'){
-		// 						propertyValue = propertyValue.replace('\t', ' ');
-		// 					}
-		// 				}
-		// 				deal.push(propertyValue);
-		// 			}
-		// 			output.push(deal.join(delim));
-		// 		}
-		// 		csvString = output.join('\n');
-		// 		res.set('Content-Type', 'text/tab-separated-values');
-		// 		res.set('Content-Disposition', 'attachment; filename=' + filename);
-		// 		res.send(csvString);
-		// 	}else{
-		// 		res.json({
-		// 			snapshotDate: snapshotDate,
-		// 			properties: properties,
-		// 			numPages: numPages,
-		// 			numPerPage: numPerPage,
-		// 			numDealsTotal: numDealsTotal,
-		// 			deals: outputDeals,
-		// 			numDealsOutput: outputDeals.length
-		// 		});
-		// 	}
-		// }
-*/
-		// function appendDeal(deal){
-		// 	var pIndex, propertyName, propertyType, versions, vIndex, version;
-		// 	var output = {};
-		// 	if(deal.properties.createdate.value > snapshotDate){
-		// 		return;
-		// 	}
-		// 	for(pIndex = 0; pIndex < properties.length; pIndex++){
-		// 		propertyName = properties[pIndex];
-		// 		propertyType = DealProperties[propertyName];
-
-		// 		if(!deal.properties[propertyName]){
-		// 			output[propertyName] = '';
-		// 		}else{
-		// 			versions = deal.properties[propertyName].versions;
-		// 			for(vIndex = 0; vIndex < versions.length; vIndex++){
-		// 				version = versions[vIndex];
-		// 				if(version.timestamp <= snapshotDate){
-		// 					output[propertyName] = version.value;
-		// 					break;
-		// 				}
-		// 			}
-		// 		}
-		// 	}
-		// 	output.dealId = deal.dealId;
-		// 	outputDeals.push(output);
-		// }
 	}
 }
