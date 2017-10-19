@@ -172,25 +172,6 @@ module.exports = {
 						return propertyValue;
 					}
 				}
-			},
-			function(req, res, next){
-				if(req.params.format == 'tsv'){
-					next();
-				}else{
-					res.json(res.deals);
-				}
-			},
-			function(req, res, next){
-				var tsv = res.deals.map(function(deal){
-					return deal.extractValuesByKeys(req.snapshot.propertyNames).join('\t');
-				});
-				var filename = 'deals_snapshot_' + req.snapshot.date.toArray().join('-') + '.tsv';
-
-				tsv.unshift(req.snapshot.propertyNames.join('\t'));
-
-				res.set('Content-Type', 'text/tab-separated-values');
-				res.set('Content-Disposition', 'attachment; filename=' + filename);
-				res.send(tsv.join('\n'));
 			}
 		];
 	}
