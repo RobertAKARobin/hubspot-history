@@ -148,19 +148,27 @@ module.exports = {
 				}
 			},
 			function(req, res, next){
+				res.deals = res.deals.filter(removeYoungDeals);
 				res.deals = res.deals.map(stripDeal);
 				next();
 
+				function removeYoungDeals(deal){
+					var dealCreateDate = parseInt(deal.properties.createdate.value);
+					return (dealCreateDate <= req.snapshot.dateAsNumber);
+				}
+
 				function stripDeal(deal){
 					var output = {};
-					var pIndex, pLength, propertyName, propertyVersions;
+					var pIndex, pLength, propertyName, property;
 					var targetVersion;
 					for(pIndex = 0; pIndex < req.snapshot.propertyNames.length; pIndex++){
 						propertyName = req.snapshot.propertyNames[pIndex];
-						propertyVersions = (deal.properties[propertyName] || {}).versions;
-						targetVersion = (propertyVersions || []).filter(getCorrectVersion)[0];
-						if(targetVersion){
-							output[propertyName] = formatPropertyValue(targetVersion.value, propertyName);
+						property = deal.properties[propertyName];
+						if(!property){
+							continue;
+						}else{
+							targetVersion = (property.versions.last() || {});
+							output[propertyName] = formatPropertyValue(targetVersion.value, propertyName)
 						}
 					}
 					output.dealId = deal.dealId;
@@ -173,9 +181,6 @@ module.exports = {
 
 				function formatPropertyValue(propertyValue, propertyName){
 					var propertyType = res.properties[propertyName].type;
-					if(propertyValue === undefined){
-						return;
-					}
 					if(propertyType == 'date' || propertyType == 'datetime'){
 						return (new Date(parseInt(propertyValue))).toArray().join('-');
 					}else if(propertyName == 'dealstage'){
