@@ -50,6 +50,22 @@ Array.prototype.last = function(){
 	var array = this;
 	return (array[array.length - 1]);
 }
+Array.prototype.expand = function(callback){
+	var array = this;
+	var output = [];
+	for(var i = 0; i < array.length; i++){
+		callback(output, array[i], i);
+	}
+	return output;
+}
+Array.prototype.remove = function(item){
+	var array = this;
+	var index = array.indexOf(item);
+	if(index > -1){
+		array.splice(index, 1);
+	}
+	return array;
+}
 Date.prototype.getMonthWithZeroes = function(){
 	var date = this;
 	return ('0' + (date.getMonth()+1)).slice(-2);

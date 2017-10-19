@@ -58,15 +58,37 @@ httpServer
 			}
 		},
 		function(req, res, next){
-			var tsv = res.deals.map(function(deal){
-				return deal.extractValuesByKeys(req.snapshot.propertyNames).join('\t');
-			});
+			var cellDelimeter = '\t';
+			var rowDelimeter = '\n';
 			var filename = 'deals_snapshot_' + req.snapshot.date.toArray().join('-') + '.tsv';
+			var propertyNames = req.snapshot.propertyNames, pIndex;
+			var numProperties = propertyNames.length;
+			var doIncludeTime = !!(req.query.includeTime);
 
-			tsv.unshift(req.snapshot.propertyNames.join('\t'));
+			var tsv = res.deals.map(function(deal){
+				var output = [], property;
+				for(pIndex = 0; pIndex < numProperties; pIndex++){
+					property = (deal[propertyNames[pIndex]] || {});
+					output.push(property.value);
+					if(doIncludeTime){
+						output.push(property.time);
+					}
+				}
+				output.unshift(deal.dealId);
+				return output.join(cellDelimeter);
+			});
+
+			tsv.unshift(propertyNames.expand(function(output, propertyName){
+				output.push(propertyName);
+				if(doIncludeTime){
+					output.push(propertyName + '_time');
+				}
+			}));
+			tsv[0].unshift('dealId');
+			tsv[0] = tsv[0].join(cellDelimeter);
 
 			res.set('Content-Type', 'text/tab-separated-values');
 			res.set('Content-Disposition', 'attachment; filename=' + filename);
-			res.send(tsv.join('\n'));
+			res.send(tsv.join(rowDelimeter));
 		}
 	);

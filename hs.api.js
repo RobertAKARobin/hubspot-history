@@ -62,12 +62,6 @@ module.exports = {
 						fieldType: property.fieldType
 					};
 				}
-				output['dealId'] = {
-					name: 'dealId',
-					label: 'Deal ID',
-					type: 'number',
-					fieldType: 'number'
-				}
 				res.properties = output;
 				next();
 			}
@@ -98,8 +92,8 @@ module.exports = {
 				);
 				var propertyNames = Array
 					.fromCSV(req.query.properties)
-					.addIfDoesNotInclude('dealId')
 					.addIfDoesNotInclude('createdate')
+					.addIfDoesNotInclude('hs_createdate')
 					.addIfDoesNotInclude('dealname')
 					.addIfDoesNotInclude('dealstage')
 					.intersectionWith(Object.keys(res.properties));
@@ -148,6 +142,9 @@ module.exports = {
 				}
 			},
 			function(req, res, next){
+				if(Array.fromCSV(req.query.properties).indexOf('hs_createdate') < 0){
+					req.snapshot.propertyNames.remove('hs_createdate');
+				}
 				res.deals = res.deals.filter(removeYoungDeals);
 				res.deals = res.deals.map(stripDeal);
 				next();
@@ -160,15 +157,25 @@ module.exports = {
 				function stripDeal(deal){
 					var output = {};
 					var pIndex, pLength, propertyName, property;
-					var targetVersion;
+					var targetVersion, versionDate;
+					var dateAddedToHS = deal.properties.hs_createdate.timestamp;
+					var timeTolerance = 2000;
 					for(pIndex = 0; pIndex < req.snapshot.propertyNames.length; pIndex++){
 						propertyName = req.snapshot.propertyNames[pIndex];
 						property = deal.properties[propertyName];
-						if(!property){
-							continue;
-						}else{
-							targetVersion = (property.versions.last() || {});
-							output[propertyName] = formatPropertyValue(targetVersion.value, propertyName)
+						if(property){
+							if(property.versions.last().timestamp - dateAddedToHS <= timeTolerance){
+								targetVersion = property.versions.last();
+							}else{
+								targetVersion = property.versions.filter(getCorrectVersion)[0];
+							}
+							if(targetVersion){
+								versionDate = new Date(targetVersion.timestamp);
+								output[propertyName] = {
+									value: formatPropertyValue(targetVersion.value, propertyName),
+									time: versionDate.toLocaleString()
+								}
+							}
 						}
 					}
 					output.dealId = deal.dealId;
@@ -181,10 +188,10 @@ module.exports = {
 
 				function formatPropertyValue(propertyValue, propertyName){
 					var propertyType = res.properties[propertyName].type;
-					if(propertyType == 'date' || propertyType == 'datetime'){
-						return (new Date(parseInt(propertyValue))).toArray().join('-');
-					}else if(propertyName == 'dealstage'){
+					if(propertyName == 'dealstage'){
 						return res.stages[propertyValue];
+					}else if(propertyType == 'date' || propertyType == 'datetime'){
+						return (new Date(parseInt(propertyValue))).toArray().join('-');
 					}else if(propertyType == 'number'){
 						return parseFloat(propertyValue);
 					}else if(propertyType == 'string'){
