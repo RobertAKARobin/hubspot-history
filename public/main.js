@@ -30,22 +30,20 @@ var Controls = (function(){
 		isLoaded: false
 	}
 
-	var refreshDeals = function(forceRefresh){
-		var queryString = {};
-		if(forceRefresh){
-			queryString.refresh = true;
-		}
+	var refreshDealProperties = function(){
 		state.isLoaded = false;
 		m.request({
 			method: 'GET',
-			url: './deals/properties',
-			data: queryString
+			url: './deals/properties'
 		}).then(function(response){
 			if(response.statusCode == 401){
 				location.href = "/authorize/reset";
 			}else{
 				DealProperties = Object.values(response).sortOn(function(item){
 					return (item.name || item.label);
+				});
+				DealProperties.unshift({
+					name: ''
 				});
 				state.isLoaded = true;
 			}
@@ -90,9 +88,7 @@ var Controls = (function(){
 				m('span', [
 					"Which Deal properties should be included in the snapshot? ",
 					m('a', {
-						onclick: function(){
-							refreshDeals(true);
-						}
+						onclick: refreshDealProperties
 					}, 'Refresh the list')
 				]),
 				m('select', {
@@ -133,7 +129,7 @@ var Controls = (function(){
 
 	return {
 		oninit: function(){
-			refreshDeals();
+			refreshDealProperties();
 		},
 		view: function(){
 			if(state.isLoaded){
