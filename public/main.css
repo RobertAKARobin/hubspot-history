@@ -52,8 +52,8 @@ a{
 }
 p{
 	display:block;
-	margin:10px auto;
 	text-align:justify;
+	margin-bottom:10px;
 }
 label{
 	display:flex;
@@ -64,11 +64,8 @@ label > *{
 	flex-grow:1;
 	margin-top:10px;
 }
-label:first-child > *{
-	margin-top:0;
-}
-label span{
-	display:block;
+label > :first-child{
+	padding-right:10px;
 }
 #display{
 	border:5px solid #ccc;
@@ -84,7 +81,12 @@ select{
 input, select{
 	display:block;
 	background-color:#fff;
+}
+input{
 	padding:5px 10px;
+}
+select{
+	padding:10px;
 }
 input[type=checkbox]{
 	position:absolute;
@@ -101,7 +103,6 @@ input[type=checkbox]+span{
 	background-color:#fff;
 	height:22px;
 	width:22px;
-	margin:0 10px;
 	border:1px solid #ccc;
 }
 input[type=checkbox]+span:after{
@@ -136,6 +137,7 @@ button{
 }
 .toggle{
 	cursor:pointer;
+	text-decoration:underline;
 }
 .toggle:after{
 	content:'\25b8';
