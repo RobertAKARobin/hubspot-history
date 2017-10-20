@@ -47,18 +47,18 @@ httpServer
 			res.json(res.properties);
 		}
 	)
-	.get('/deals/snapshot\.:format?', 
+	.get('/deals/snapshot', 
 		HS.api.properties(),
 		HS.api.stages(),
 		HS.api.deals(),
 		function(req, res, next){
-			if(req.params.format == 'tsv'){
-				next();
-			}else{
+			if(req.query.toJson){
 				res.json({
 					snapshotDate: req.snapshot.date.toArray().join('-'),
 					deals: res.deals
 				});
+			}else{
+				next();
 			}
 		},
 		function(req, res, next){

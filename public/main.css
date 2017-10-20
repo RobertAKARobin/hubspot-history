@@ -57,6 +57,7 @@ p{
 }
 label{
 	display:flex;
+	cursor:pointer;
 }
 label > *{
 	flex-basis:50%;
@@ -85,6 +86,39 @@ input, select{
 	background-color:#fff;
 	padding:5px 10px;
 }
+input[type=checkbox]{
+	position:absolute;
+	top:0;
+	left:0;
+	opacity:0.01;
+	width:1px;
+	height:1px;
+	overflow:hidden;
+}
+input[type=checkbox]+span{
+	display:block;
+	text-align:center;
+	background-color:#fff;
+	height:22px;
+	width:22px;
+	margin:0 10px;
+	border:1px solid #ccc;
+}
+input[type=checkbox]+span:after{
+	content:'\2713';
+}
+input[type=checkbox]:checked+span{
+	border-width:2px 0 0 2px;
+}
+input[type=checkbox]:not(:checked)+span{
+	border-width:0 2px 2px 0;
+}
+input[type=checkbox]:checked+span:after{
+	color:#000;
+}
+input[type=checkbox]:not(:checked)+span:after{
+	color:#ccc;
+}
 .numbers{
 	display:flex;
 }
@@ -99,4 +133,13 @@ button{
 	border-radius:15px;
 	background-color:#14264a;
 	color:#fff;
+}
+.toggle{
+	cursor:pointer;
+}
+.toggle:after{
+	content:'\25b8';
+}
+.toggle[active]:after{
+	content:'\25be';
 }

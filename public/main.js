@@ -1,7 +1,7 @@
 'use strict';
 
-Location.query = function(paramsObject){
-	var query = m.parseQueryString((window.location.href.match(/\?.*?$/g) || [])[0]);
+Location.query = function(paramsObject, doClear){
+	var query = (doClear ? {} : m.parseQueryString((window.location.href.match(/\?.*?$/g) || [])[0]));
 	var newurl = window.location.origin + window.location.pathname;
 	if(paramsObject){
 		for(var key in paramsObject){
@@ -19,35 +19,30 @@ var Controls = (function(){
 
 	var Today = (new Date()).toArray();
 
-	var Input = {
+	var Query = {
 		year: m.stream(Location.query().year || Today[0]),
 		month: m.stream(Location.query().month || Today[1]),
 		day: m.stream(Location.query().day || Today[2]),
-		properties: (Location.query().properties || '').split(',')
+		properties: (Location.query().properties || '').toString().split(','),
+		limitToFirst: m.stream(Location.query().limitToFirst || false),
+		includeTime: m.stream(Location.query().includeTime || false),
+		toJson: m.stream(Location.query().toJson || false)
 	}
 
 	var state = {
-		isLoaded: false
+		isLoaded: false,
+		showAdvanced: false
 	}
 
-	var refreshDealProperties = function(){
-		state.isLoaded = false;
-		m.request({
-			method: 'GET',
-			url: './deals/properties'
-		}).then(function(response){
-			if(response.statusCode == 401){
-				location.href = "/authorize/reset";
-			}else{
-				DealProperties = Object.values(response).sortOn(function(item){
-					return (item.name || item.label);
-				});
-				DealProperties.unshift({
-					name: ''
-				});
-				state.isLoaded = true;
+	var updateQuerystring = function(){
+		var qs = JSON.parse(JSON.stringify(Query));
+		qs.properties = qs.properties.join(',');
+		for(var propertyName in qs){
+			if(qs[propertyName] == false){
+				delete qs[propertyName];
 			}
-		});
+		}
+		Location.query(qs, true);
 	}
 
 	var views = {
@@ -57,25 +52,38 @@ var Controls = (function(){
 				oninput: function(event){
 					event.redraw = false;
 					stream(event.target.value);
-					Location.query(Input);
+					updateQuerystring();
 				}
 			}
+		},
+		checkbox: function(stream){
+			return [
+				m('input[type=checkbox]', {
+					checked: stream(),
+					onchange: function(event){
+						var currentStreamValue = stream();
+						stream(!currentStreamValue);
+						updateQuerystring();
+					}
+				}),
+				m('span')
+			]
 		},
 		date: function(){
 			return m('label', [
 				m('span', "Take a snapshot of what date? (Y/M/D)"),
 				m('div.numbers', [
-					m('input[type=number]', views.input(Input.year).merge({
+					m('input[type=number]', views.input(Query.year).merge({
 						min: 2012,
 						max: 2022,
 						placeholder: 'YYYY'
 					})),
-					m('input[type=number]', views.input(Input.month).merge({
+					m('input[type=number]', views.input(Query.month).merge({
 						min: 1,
 						max: 12,
 						placeholder: 'MM'
 					})),
-					m('input[type=number]', views.input(Input.day).merge({
+					m('input[type=number]', views.input(Query.day).merge({
 						min: 1,
 						max: 31,
 						placeholder: 'DD'
@@ -85,12 +93,7 @@ var Controls = (function(){
 		},
 		properties: function(){
 			return m('label', [
-				m('span', [
-					"Which Deal properties should be included in the snapshot? ",
-					m('a', {
-						onclick: refreshDealProperties
-					}, 'Refresh the list')
-				]),
+				m('span', "Which Deal properties should be included in the snapshot? "),
 				m('select', {
 					multiple: true,
 					onchange: function(event){
@@ -103,16 +106,33 @@ var Controls = (function(){
 								properties.push(options[i].value);
 							}
 						}
-						Input.properties = properties.join(',');
-						Location.query(Input);
+						Query.properties = properties;
+						updateQuerystring();
 					}
 				}, DealProperties.map(function(property){
 					return m('option', {
 						value: property.name,
-						selected: Input.properties.includes(property.name)
+						selected: Query.properties.includes(property.name)
 					}, property.label || property.name)
 				}))
 			])
+		},
+		advanced: function(){
+			return [
+				m('label', [
+					m('span', 'View as .json instead of .tsv?'),
+					m('span', views.checkbox(Query.toJson))
+				]),
+				m('label', [
+					m('span', 'Download first 250 only?'),
+					m('span', views.checkbox(Query.limitToFirst))
+				]),
+				m('label', [
+					m('span', 'For each property, display the timestamp of when it got its value?*'),
+					m('span', views.checkbox(Query.includeTime))
+				]),
+				m('p', "*If you create a Deal/Opportunity in Salesforce in January, and then import it into Hubspot in March, the 'createdate' will be January, but the timestamp for the Deal's properties will be March.")
+			]
 		},
 		submit: function(){
 			return m('label', [
@@ -120,7 +140,7 @@ var Controls = (function(){
 				m('button', {
 					onclick: function(event){
 						event.redraw = false;
-						window.open('./deals/snapshot.tsv' + window.location.search);
+						window.open('./deals/snapshot' + window.location.search);
 					}
 				}, 'Download')
 			])
@@ -129,13 +149,36 @@ var Controls = (function(){
 
 	return {
 		oninit: function(){
-			refreshDealProperties();
+			state.isLoaded = false;
+			m.request({
+				method: 'GET',
+				url: './deals/properties'
+			}).then(function(response){
+				if(response.statusCode == 401){
+					location.href = "/authorize/reset";
+				}else{
+					DealProperties = Object.values(response).sortOn(function(item){
+						return (item.name || item.label);
+					});
+					DealProperties.unshift({
+						name: ''
+					});
+					state.isLoaded = true;
+				}
+			});
 		},
 		view: function(){
 			if(state.isLoaded){
 				return [
 					views.date(),
 					views.properties(),
+					m('label.toggle', {
+						active: (state.showAdvanced),
+						onclick: function(event){
+							state.showAdvanced = !(state.showAdvanced);
+						}
+					}, 'Advanced'),
+					(state.showAdvanced ? views.advanced() : null),
 					views.submit()
 				]
 			}else{
