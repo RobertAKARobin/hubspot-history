@@ -20,5 +20,23 @@
 		<p>This webpage's address/URL updates as you make selections so you can "save" and "share" your selections.</p>
 
 		<p>Select multiple properties by holding the 'Shift' or 'Command'/'Control' keys while you click. These properties are always included: 'Deal Name', 'Deal Stage', and 'Create Date'.</p>
+
+		<!--
+		,---.    |                              |
+		|---|,---|.    ,,---.,---.,---.,---.,---|
+		|   ||   | \  / ,---||   ||    |---'|   |
+		`   '`---'  `'  `---^`   '`---'`---'`---'
+
+		The Download button opens a `/deals/snapshot.tsv` page. Remove the `.tsv` to see the results as JSON.
+
+		On the `/deals/snapshot` page that opens, you can include additional optional querystring parameters (with or without .tsv):
+
+		- limitToFirst: When true, will download only the first "page" of results from the Hubspot API
+		- includeTime: When true, will include timestamps for each property, showing when that property was given the value it had on the snapshot date.
+
+		Note that when you import a Deal, e.g. via a Salesforce integration, the timestamp for a property will be when the Deal was imported into Hubspot, *NOT* when that Deal was originally created.
+		
+		So if you create a Deal/Opportunity in Salesforce in January, and then import it into Hubspot in March, the 'createdate' will be January, but the timestamp for the Deal's properties will be March.
+		-->
 	</body>
 </html>
