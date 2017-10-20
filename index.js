@@ -32,11 +32,12 @@ baseServer
 httpServer
 	.use(cookieParser())
 	.use(bodyParser.json())
-	.use('/', express.static('./public'))
 	.get('/authorize', HS.authorize.init())
 	.get('/authorize/redirect', HS.authorize.redirect())
 	.get('/authorize/reset', HS.authorize.reset())
+	.use('/', express.static('./public'))
 	.get('*', HS.authorize.check())
+	.use('/', express.static('./views'))
 	.get('/deals/properties',
 		HS.api.properties(),
 		function(req, res, next){
