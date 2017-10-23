@@ -21,8 +21,6 @@ if(process.env['NODE_ENV'] != 'production'){
 
 var httpServer = express();
 var baseServer = http.createServer(httpServer);
-var DealProperties = undefined;
-var DealStages = undefined;
 
 baseServer
 	.listen(process.env.PORT, function(){
