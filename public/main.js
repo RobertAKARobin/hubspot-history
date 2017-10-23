@@ -95,7 +95,7 @@ var Controls = (function(){
 			return m('label', [
 				m('div', [
 					m('p', "Which Deal properties should be included in the snapshot?"),
-					m('p', "'Deal Name', 'Deal Stage', and 'Create Date' are always included."),
+					m('p', "'Deal ID', 'Deal Name', 'Deal Stage', and 'Create Date' are always included."),
 					m('p', "Select multiple by holding 'Shift' or 'Command'/'Control' while you click.")
 				]),
 				m('select', {
