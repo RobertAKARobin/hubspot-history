@@ -14,7 +14,7 @@ function APIRequest(params){
 			params.headers = (params.headers || {});
 			params.headers['Authorization'] = 'Bearer ' + req.cookies['access_token'];
 		}
-		console.log(params);
+		console.log(params.url);
 		request(params, function(error, response, body){
 			var isAjaxRequest = (req.headers.accept.indexOf('json') > -1);
 			var result = {
