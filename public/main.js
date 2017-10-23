@@ -164,9 +164,6 @@ var Controls = (function(){
 					DealProperties = Object.values(response).sortOn(function(item){
 						return (item.name || item.label);
 					});
-					DealProperties.unshift({
-						name: ''
-					});
 					state.isLoaded = true;
 				}
 			});
