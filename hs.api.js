@@ -195,7 +195,7 @@ module.exports = {
 					}else if(propertyType == 'number'){
 						return parseFloat(propertyValue);
 					}else if(propertyType == 'string'){
-						return propertyValue.replace(/\t/g, ' ');
+						return (propertyValue || '').replace(/\t/g, ' ');
 					}else{
 						return propertyValue;
 					}
