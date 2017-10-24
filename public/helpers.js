@@ -1,5 +1,7 @@
 'use strict';
 
+//TODO: Nest all these in some kind of helpers object
+
 Array.fromCSV = function(string){
 	string = (string || '').trim();
 	return (string ? string.split(',') : []);
@@ -78,7 +80,7 @@ Date.prototype.toArray = function(){
 	var date = this;
 	return [date.getFullYear(), date.getMonthWithZeroes(), date.getDateWithZeroes()];
 }
-Object.defineProperty(Object.prototype, 'merge', {
+Object.defineProperty(Object.prototype, '_merge', {
 	enumerable: false,
 	value: function(input){
 		var object = this;
@@ -86,16 +88,5 @@ Object.defineProperty(Object.prototype, 'merge', {
 			input[key] = object[key];
 		}
 		return input;
-	}
-})
-Object.defineProperty(Object.prototype, 'extractValuesByKeys', {
-	enumerable: false,
-	value: function(propertiesArray){
-		var object = this;
-		var output = [];
-		for(var i = 0; i < propertiesArray.length; i++){
-			output.push(object[propertiesArray[i]]);
-		}
-		return output;
 	}
 })

@@ -73,17 +73,17 @@ var Controls = (function(){
 			return m('label', [
 				m('p', "Take a snapshot of what date? (Y/M/D)"),
 				m('div.numbers', [
-					m('input[type=number]', views.input(Query.year).merge({
+					m('input[type=number]', views.input(Query.year)._merge({
 						min: 2012,
 						max: 2022,
 						placeholder: 'YYYY'
 					})),
-					m('input[type=number]', views.input(Query.month).merge({
+					m('input[type=number]', views.input(Query.month)._merge({
 						min: 1,
 						max: 12,
 						placeholder: 'MM'
 					})),
-					m('input[type=number]', views.input(Query.day).merge({
+					m('input[type=number]', views.input(Query.day)._merge({
 						min: 1,
 						max: 31,
 						placeholder: 'DD'

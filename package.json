@@ -15,8 +15,8 @@
     "dotenv": "^4.0.0",
     "express": "^4.16.2",
     "http": "0.0.0",
+    "hubspot-api-wrapper": "git+https://github.com/RobertAKARobin/hubspot-api-wrapper.git",
     "path": "^0.12.7",
-    "querystring": "^0.2.0",
     "request": "^2.83.0"
   }
 }

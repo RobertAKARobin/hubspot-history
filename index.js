@@ -6,18 +6,16 @@ var http = require('http');
 var cookieParser = require('cookie-parser');
 var path = require('path');
 
-var HS = {
-	authorize: require('./hs.auth'),
-	api: require('./hs.api')
-}
-require('./public/helpers');
-
 if(process.env['NODE_ENV'] != 'production'){
 	require('dotenv').config();
 	process.env.PORT = 3000;
 	process.env['NODE_ENV'] = 'development';
 	console.log('Dev environment');
 }
+
+require('./public/helpers');
+
+var HS = require('./hs.api');
 
 var httpServer = express();
 var baseServer = http.createServer(httpServer);
@@ -30,14 +28,14 @@ baseServer
 httpServer
 	.use(cookieParser())
 	.use(bodyParser.json())
-	.get('/authorize', HS.authorize.init())
-	.get('/authorize/redirect', HS.authorize.redirect())
-	.get('/authorize/reset', HS.authorize.reset())
+	.get('/authorize', HS.auth.init)
+	.get('/authorize/redirect', HS.auth.redirect)
+	.get('/authorize/reset', HS.auth.reset)
 	.use('/', express.static('./public'))
-	.get('*', HS.authorize.check())
+	.get('*', HS.auth.check)
 	.use('/', express.static('./views'))
 	.get('/deals/properties',
-		HS.api.properties(),
+		HS.properties(),
 		function(req, res, next){
 			var defaultProperties = ['createdate', 'dealname', 'dealstage'];
 			defaultProperties.forEach(function(propertyName){
@@ -47,9 +45,9 @@ httpServer
 		}
 	)
 	.get('/deals/snapshot', 
-		HS.api.properties(),
-		HS.api.stages(),
-		HS.api.deals(),
+		HS.properties(),
+		HS.stages(),
+		HS.deals(),
 		function(req, res, next){
 			if(req.query.toJson){
 				res.json({

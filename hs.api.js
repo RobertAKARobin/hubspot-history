@@ -1,51 +1,21 @@
 'use strict';
 
-var request = require('request');
-
-var BaseURL = 'https://api.hubapi.com/';
-
-function APIRequest(params){
-	params.url = BaseURL + params.url;
-	return function(req, res, next){
-		if(process.env['NODE_ENV'] == 'development'){
-			params.qs = (params.qs || {})
-			params.qs['hapikey'] = process.env['HAPIKEY'];
-		}else if(process.env['NODE_ENV'] == 'production'){
-			params.headers = (params.headers || {});
-			params.headers['Authorization'] = 'Bearer ' + req.cookies['access_token'];
-		}
-		console.log(params.url);
-		request(params, function(error, response, body){
-			var isAjaxRequest = (req.headers.accept.indexOf('json') > -1);
-			var result = {
-				success: true,
-				statusCode: response.statusCode
-			};
-			console.log(response.statusCode);
-			if(result.statusCode == 401){
-				if(isAjaxRequest){
-					return res.json(result);
-				}else{
-					return res.redirect('/authorize');
-				}
-			}else if(error || result.statusCode >= 400){
-				result.success = false;
-			}
-			try{
-				result.body = JSON.parse(body || '{}');
-			}catch(e){
-				result.body = (error || body);
-			}
-			res.apiResponse = result;
-			next();
-		});
-	}
-}
+var hsAPIWrapper = require('hubspot-api-wrapper');
+var HS = hsAPIWrapper({
+	'authEntryPoint': '/authorize',
+	'authExitPoint': '/',
+	'cookieName': 'access_token',
+	'client_id': process.env['CLIENT_ID'],
+	'client_secret': process.env['CLIENT_SECRET'],
+	'redirect_uri': process.env['REDIRECT_URI'],
+	'hapikey': process.env['HAPIKEY']
+});
 
 module.exports = {
+	auth: HS.auth,
 	properties: function(){
 		return [
-			APIRequest({
+			HS.api({
 				method: 'GET',
 				url: 'properties/v1/deals/properties'
 			}),
@@ -69,7 +39,7 @@ module.exports = {
 	},
 	stages: function(){
 		return [
-			APIRequest({
+			HS.api({
 				method: 'GET',
 				url: 'deals/v1/pipelines/default'
 			}),
@@ -114,7 +84,7 @@ module.exports = {
 				loadMoreDeals();
 
 				function loadMoreDeals(){
-					var apiRequest = APIRequest({
+					var apiRequest = HS.api({
 						method: 'GET',
 						url: 'deals/v1/deal/paged',
 						qsStringifyOptions: {
