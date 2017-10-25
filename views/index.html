@@ -2,13 +2,17 @@
 <html>
 	<head>
 		<title>Hubspot Snapshot</title>
+		<script>var Components = {};</script>
 		<script src="./mithril.min.js"></script>
 		<script src="./mithril.stream.min.js"></script>
 		<script src="./helpers.js"></script>
+		<script src="./snapshot.js"></script>
 		<script src="./main.js"></script>
 		<link rel="stylesheet" href="main.css" />
 	</head>
 	<body>
+		<h1>Hubspot Utilities</h1>
+		
 		<section>
 			<h2>Hubspot Snapshot</h2>
 
@@ -18,7 +22,9 @@
 				<p>This webpage's address/URL updates as you make selections so you can "save" and "share" your selections.</p>
 			</div>
 
-			<div id="display"></div>
+			<button data-mount="snapshot">Load</button>
+
+			<div id="snapshot"></div>
 		</section>
 	</body>
 </html>
