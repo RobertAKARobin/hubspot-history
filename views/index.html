@@ -1,10 +1,6 @@
 <!DOCTYPE html>
 <html>
 	<head>
-		<!--
-		https://github.com/RobertAKARobin/hubspot-snapshot
-		hello@robertakarobin.com
-		-->
 		<title>Hubspot Snapshot</title>
 		<script src="./mithril.min.js"></script>
 		<script src="./mithril.stream.min.js"></script>
@@ -13,14 +9,16 @@
 		<link rel="stylesheet" href="main.css" />
 	</head>
 	<body>
-		<h1>Hubspot Snapshot</h1>
+		<section>
+			<h2>Hubspot Snapshot</h2>
 
-		<div id="display"></div>
+			<div class="instructions">
+				<p>This lets you download an Excel-friendly list of all the Deals in Hubspot, as they appeared on a certain date.</p>
+				
+				<p>This webpage's address/URL updates as you make selections so you can "save" and "share" your selections.</p>
+			</div>
 
-		<h2>Instructions</h2>
-
-		<p>This lets you download an Excel-friendly list of all the Deals in Hubspot, as they appeared on a certain date.</p>
-
-		<p>This webpage's address/URL updates as you make selections so you can "save" and "share" your selections.</p>
+			<div id="display"></div>
+		</section>
 	</body>
 </html>

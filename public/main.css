@@ -31,8 +31,8 @@ body{
 }
 h1{
 	color: #14264a;
-	font-size:18px;
-	line-height:24px;
+	font-size:36px;
+	line-height:48px;
 	margin:10px 3px;
 	font-family:"Roboto Slab", Palatino, serif;
 	font-weight:bold;
@@ -41,7 +41,7 @@ h2{
 	color: #14264a;
 	font-size:18px;
 	line-height:24px;
-	margin:10px 3px;
+	margin-bottom:10px;
 	font-family:"Roboto Slab", Palatino, serif;
 	font-weight:bold;
 }
@@ -55,19 +55,26 @@ p{
 	text-align:justify;
 	margin-bottom:10px;
 }
+.instructions{
+	font-style:italic;
+	border-left:1px solid #ccc;
+	padding-left:10px;
+}
 label{
-	display:flex;
 	cursor:pointer;
 }
-label > *{
+.row{
+	display:flex;
+}
+.row > *{
 	flex-basis:50%;
 	flex-grow:1;
 	margin-top:10px;
 }
-label > :first-child{
+.row > :first-child{
 	padding-right:10px;
 }
-#display{
+section{
 	border:5px solid #ccc;
 	background-color:#eee;
 	margin-bottom:20px;
@@ -135,9 +142,15 @@ button{
 	background-color:#14264a;
 	color:#fff;
 }
+button:hover{
+	background-color:#00f;
+}
 .toggle{
 	cursor:pointer;
 	text-decoration:underline;
+}
+.toggle:hover{
+	color:#00f;
 }
 .toggle:after{
 	content:'\25b8';

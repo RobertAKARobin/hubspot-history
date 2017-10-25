@@ -70,7 +70,7 @@ var Controls = (function(){
 			]
 		},
 		date: function(){
-			return m('label', [
+			return m('label.row', [
 				m('p', "Take a snapshot of what date? (Y/M/D)"),
 				m('div.numbers', [
 					m('input[type=number]', views.input(Query.year)._merge({
@@ -92,11 +92,11 @@ var Controls = (function(){
 			])
 		},
 		properties: function(){
-			return m('label', [
+			return m('label.row', [
 				m('div', [
 					m('p', "Which Deal properties should be included in the snapshot?"),
-					m('p', "'Deal ID', 'Deal Name', 'Deal Stage', and 'Create Date' are always included."),
-					m('p', "Select multiple by holding 'Shift' or 'Command'/'Control' while you click.")
+					m('p.instructions', "'Deal ID', 'Deal Name', 'Deal Stage', and 'Create Date' are always included."),
+					m('p.instructions', "Select multiple by holding 'Shift' or 'Command'/'Control' while you click.")
 				]),
 				m('select', {
 					multiple: true,
@@ -123,24 +123,24 @@ var Controls = (function(){
 		},
 		advanced: function(){
 			return [
-				m('label', [
+				m('label.row', [
 					m('p', 'View as .json instead of .tsv?'),
 					m('span', views.checkbox(Query.toJson))
 				]),
-				m('label', [
+				m('label.row', [
 					m('p', 'Download first 250 only?'),
 					m('span', views.checkbox(Query.limitToFirst))
 				]),
-				m('label', [
+				m('label.row', [
 					m('p', 'For each property, display the timestamp of when it got its value?*'),
 					m('span', views.checkbox(Query.includeTime))
 				]),
-				m('p', "*If you create a Deal/Opportunity in Salesforce in January, and then import it into Hubspot in March, the 'createdate' will be January, but the timestamp for the Deal's properties will be March.")
+				m('p.instructions', "*If you create a Deal/Opportunity in Salesforce in January, and then import it into Hubspot in March, the 'createdate' will be January, but the timestamp for the Deal's properties will be March.")
 			]
 		},
 		submit: function(){
-			return m('label', [
-				m('p', 'May take 10+ seconds.'),
+			return m('div.row', [
+				m('p'),
 				m('button', {
 					onclick: function(event){
 						event.redraw = false;
@@ -182,7 +182,7 @@ var Controls = (function(){
 						onclick: function(event){
 							state.showAdvanced = !(state.showAdvanced);
 						}
-					}, 'Advanced'),
+					}, 'Show Advanced'),
 					(state.showAdvanced ? views.advanced() : null),
 					views.submit()
 				]
