@@ -51,7 +51,7 @@ httpServer
 		function(req, res, next){
 			if(req.query.toJson){
 				res.json({
-					snapshotDate: req.snapshot.date.toArray().join('-'),
+					snapshotDate: req.snapshot.date._toArray().join('-'),
 					deals: res.deals
 				});
 			}else{
@@ -61,7 +61,7 @@ httpServer
 		function(req, res, next){
 			var cellDelimeter = '\t';
 			var rowDelimeter = '\n';
-			var filename = 'deals_snapshot_' + req.snapshot.date.toArray().join('-') + '.tsv';
+			var filename = 'deals_snapshot_' + req.snapshot.date._toArray().join('-') + '.tsv';
 			var propertyNames = req.snapshot.propertyNames, pIndex;
 			var numProperties = propertyNames.length;
 			var doIncludeTime = !!(req.query.includeTime);
@@ -79,7 +79,7 @@ httpServer
 				return output.join(cellDelimeter);
 			});
 
-			tsv.unshift(propertyNames.expand(function(output, propertyName){
+			tsv.unshift(propertyNames._expand(function(output, propertyName){
 				output.push(propertyName);
 				if(doIncludeTime){
 					output.push(propertyName + '_time');

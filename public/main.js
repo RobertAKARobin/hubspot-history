@@ -17,7 +17,7 @@ var Controls = (function(){
 
 	var DealProperties = [];
 
-	var Today = (new Date()).toArray();
+	var Today = (new Date())._toArray();
 
 	var Query = {
 		year: m.stream(Location.query().year || Today[0]),
@@ -161,7 +161,7 @@ var Controls = (function(){
 				if(response.statusCode == 401){
 					location.href = "/authorize/reset";
 				}else{
-					DealProperties = Object.values(response).sortOn(function(item){
+					DealProperties = Object.values(response)._sortOn(function(item){
 						return (item.name || item.label);
 					});
 					state.isLoaded = true;

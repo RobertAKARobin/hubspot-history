@@ -2,18 +2,18 @@
 
 //TODO: Nest all these in some kind of helpers object
 
-Array.fromCSV = function(string){
+Array._fromCSV = function(string){
 	string = (string || '').trim();
 	return (string ? string.split(',') : []);
 }
-Array.prototype.addIfDoesNotInclude = function(item){
+Array.prototype._addIfDoesNotInclude = function(item){
 	var array = this;
 	if(array.indexOf(item) < 0){
 		array.push(item);
 	}
 	return array;
 }
-Array.prototype.sortOn = function(sortProperty){
+Array.prototype._sortOn = function(sortProperty){
 	var array = this;
 	var sortFunction = ((sortProperty instanceof Function) ? sortProperty : function(item){
 		return item[sortProperty];
@@ -30,7 +30,7 @@ Array.prototype.sortOn = function(sortProperty){
 		}
 	});
 }
-Array.prototype.intersectionWith = function(comparator){
+Array.prototype._intersectionWith = function(comparator){
 	var source = this;
 	var output = [];
 	for(var i = 0; i < source.length; i++){
@@ -40,7 +40,7 @@ Array.prototype.intersectionWith = function(comparator){
 	}
 	return output;
 }
-Array.prototype.mapToObject = function(callback){
+Array.prototype._mapToObject = function(callback){
 	var array = this;
 	var output = {};
 	for(var i = 0; i < array.length; i++){
@@ -48,11 +48,11 @@ Array.prototype.mapToObject = function(callback){
 	}
 	return output;
 }
-Array.prototype.last = function(){
+Array.prototype._last = function(){
 	var array = this;
 	return (array[array.length - 1]);
 }
-Array.prototype.expand = function(callback){
+Array.prototype._expand = function(callback){
 	var array = this;
 	var output = [];
 	for(var i = 0; i < array.length; i++){
@@ -60,7 +60,7 @@ Array.prototype.expand = function(callback){
 	}
 	return output;
 }
-Array.prototype.remove = function(item){
+Array.prototype._remove = function(item){
 	var array = this;
 	var index = array.indexOf(item);
 	if(index > -1){
@@ -68,17 +68,17 @@ Array.prototype.remove = function(item){
 	}
 	return array;
 }
-Date.prototype.getMonthWithZeroes = function(){
+Date.prototype._getMonthWithZeroes = function(){
 	var date = this;
 	return ('0' + (date.getMonth()+1)).slice(-2);
 }
-Date.prototype.getDateWithZeroes = function(){
+Date.prototype._getDateWithZeroes = function(){
 	var date = this;
 	return ('0' + date.getDate()).slice(-2);
 }
-Date.prototype.toArray = function(){
+Date.prototype._toArray = function(){
 	var date = this;
-	return [date.getFullYear(), date.getMonthWithZeroes(), date.getDateWithZeroes()];
+	return [date.getFullYear(), date._getMonthWithZeroes(), date._getDateWithZeroes()];
 }
 Object.defineProperty(Object.prototype, '_merge', {
 	enumerable: false,

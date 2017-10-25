@@ -44,7 +44,7 @@ module.exports = {
 				url: 'deals/v1/pipelines/default'
 			}),
 			function(req, res, next){
-				res.stages = res.apiResponse.body.stages.mapToObject(function(object, stage){
+				res.stages = res.apiResponse.body.stages._mapToObject(function(object, stage){
 					object[stage.stageId] = stage.label;
 				});
 				next();
@@ -54,19 +54,19 @@ module.exports = {
 	deals: function(){
 		return [
 			function(req, res, next){
-				var Today = (new Date()).toArray();
+				var Today = (new Date())._toArray();
 				var snapshotDate = new Date(
 					(parseInt(req.query.year) || Today[0]),
 					(parseInt(req.query.month) || Today[1]),
 					(parseInt(req.query.day) || Today[2])
 				);
 				var propertyNames = Array
-					.fromCSV(req.query.properties)
-					.addIfDoesNotInclude('createdate')
-					.addIfDoesNotInclude('hs_createdate')
-					.addIfDoesNotInclude('dealname')
-					.addIfDoesNotInclude('dealstage')
-					.intersectionWith(Object.keys(res.properties));
+					._fromCSV(req.query.properties)
+					._addIfDoesNotInclude('createdate')
+					._addIfDoesNotInclude('hs_createdate')
+					._addIfDoesNotInclude('dealname')
+					._addIfDoesNotInclude('dealstage')
+					._intersectionWith(Object.keys(res.properties));
 				
 				req.snapshot = {
 					propertyNames: propertyNames,
@@ -112,8 +112,8 @@ module.exports = {
 				}
 			},
 			function(req, res, next){
-				if(Array.fromCSV(req.query.properties).indexOf('hs_createdate') < 0){
-					req.snapshot.propertyNames.remove('hs_createdate');
+				if(Array._fromCSV(req.query.properties).indexOf('hs_createdate') < 0){
+					req.snapshot.propertyNames._remove('hs_createdate');
 				}
 				res.deals = res.deals.filter(removeYoungDeals);
 				res.deals = res.deals.map(stripDeal);
@@ -134,8 +134,8 @@ module.exports = {
 						propertyName = req.snapshot.propertyNames[pIndex];
 						property = deal.properties[propertyName];
 						if(property){
-							if(property.versions.last().timestamp - dateAddedToHS <= timeTolerance){
-								targetVersion = property.versions.last();
+							if(property.versions._last().timestamp - dateAddedToHS <= timeTolerance){
+								targetVersion = property.versions._last();
 							}else{
 								targetVersion = property.versions.filter(getCorrectVersion)[0];
 							}
@@ -161,7 +161,7 @@ module.exports = {
 					if(propertyName == 'dealstage'){
 						return res.stages[propertyValue];
 					}else if(propertyType == 'date' || propertyType == 'datetime'){
-						return (new Date(parseInt(propertyValue))).toArray().join('-');
+						return (new Date(parseInt(propertyValue)))._toArray().join('-');
 					}else if(propertyType == 'number'){
 						return parseFloat(propertyValue);
 					}else if(propertyType == 'string'){
