@@ -161,6 +161,10 @@ var Controls = (function(){
 				if(response.statusCode == 401){
 					location.href = "/authorize/reset";
 				}else{
+					var defaultProperties = ['createdate', 'dealname', 'dealstage'];
+					defaultProperties.forEach(function(propertyName){
+						delete response[propertyName];
+					});
 					DealProperties = Object.values(response)._sortOn(function(item){
 						return (item.name || item.label);
 					});
