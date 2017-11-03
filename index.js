@@ -35,20 +35,20 @@ httpServer
 	.get('*', HS.auth.check)
 	.use('/', express.static('./views'))
 	.get('/deals/stages',
-		HS.stages(),
+		HS.stages,
 		function(req, res, next){
 			res.json(res.stages);
 		}
 	)
 	.get('/deals/properties',
-		HS.properties(),
+		HS.properties,
 		function(req, res, next){
 			res.json(res.properties);
 		}
 	)
 	.get('/deals/snapshot',
-		HS.properties(),
-		HS.stages(),
+		HS.properties,
+		HS.stages,
 		function(req, res, next){
 			req.apiOptions = {
 				propertiesWithHistory: !!(req.query.includeHistory),
@@ -60,7 +60,7 @@ httpServer
 			req.limitToFirst = req.query.limitToFirst;
 			next();
 		},
-		HS.deals(),
+		HS.deals,
 		function(req, res, next){
 			res.json(res.deals);
 		}
