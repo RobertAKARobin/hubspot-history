@@ -52,20 +52,12 @@ module.exports = {
 		]
 	},
 	deals: function(){
-		var deals = [];
 		return [
 			function(req, res, next){
 
-				req.apiOptions = {
-					offset: 0,
-					limit: 250,
-					propertiesWithHistory: !!(req.query.includeHistory),
-					properties:  Array
-					._fromCSV(req.query.properties)
-					._addIfDoesNotInclude('dealname')
-					._addIfDoesNotInclude('createdate')
-					._addIfDoesNotInclude('dealstage')
-				}
+				req.apiOptions = (req.apiOptions || {});
+				req.apiOptions.offset = (req.apiOptions.offset || 0);
+				req.apiOptions.limit = (req.apiOptions.limit || 250);
 
 				res.deals = [];
 				loadMoreDeals();
@@ -84,32 +76,14 @@ module.exports = {
 
 				function actionAfterAPIResponse(){
 					var apiResponse = res.apiResponse.body;
-					deals = deals.concat(apiResponse.deals);
-					if(!apiResponse.hasMore || req.query.limitToFirst){
+					res.deals = res.deals.concat(apiResponse.deals);
+					if(!apiResponse.hasMore || req.limitToFirst){
 						next();
 					}else{
 						req.apiOptions.offset = apiResponse.offset;
 						loadMoreDeals();
 					}
 				}
-			},
-			function(req, res, next){
-				var propertyNames = req.apiOptions.properties;
-				res.deals = {};
-
-				var i, l = propertyNames.length, propertyName;
-				deals.forEach(function(deal){
-					var output = {
-						dealId: deal.dealId
-					};
-					for(i = 0; i < l; i++){
-						propertyName = propertyNames[i];
-						output[propertyName] = deal.properties[propertyName].value;
-					}
-					output.dealstage = res.stages[output.dealstage];
-					res.deals[deal.dealId] = output;
-				});
-				next();
 			}
 		];
 	}

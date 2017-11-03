@@ -4,8 +4,6 @@ Components.snapshot = function(){
 
     var DealProperties = [];
 
-    var Today = (new Date())._toArray();
-
     var Query = {
         properties: (Location.query().properties || '').toString().split(','),
         limitToFirst: m.stream(Location.query().limitToFirst || false),

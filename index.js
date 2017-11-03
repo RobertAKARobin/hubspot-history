@@ -37,9 +37,7 @@ httpServer
 	.get('/deals/stages',
 		HS.stages(),
 		function(req, res, next){
-			res.json({
-				stages: res.stages
-			})
+			res.json(res.stages);
 		}
 	)
 	.get('/deals/properties',
@@ -48,13 +46,22 @@ httpServer
 			res.json(res.properties);
 		}
 	)
-	.get('/deals/snapshot', 
+	.get('/deals/snapshot',
 		HS.properties(),
 		HS.stages(),
+		function(req, res, next){
+			req.apiOptions = {
+				propertiesWithHistory: !!(req.query.includeHistory),
+				properties:  Array._fromCSV(req.query.properties)
+					._addIfDoesNotInclude('dealname')
+					._addIfDoesNotInclude('createdate')
+					._addIfDoesNotInclude('dealstage')
+			}
+			req.limitToFirst = req.query.limitToFirst;
+			next();
+		},
 		HS.deals(),
 		function(req, res, next){
-			res.json({
-				deals: res.deals
-			});
+			res.json(res.deals);
 		}
 	);
