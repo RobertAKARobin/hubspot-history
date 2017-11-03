@@ -62,6 +62,9 @@ httpServer
 		},
 		HS.deals,
 		function(req, res, next){
+			Object.values(res.deals).forEach(function(deal){
+				deal.dealstage = res.stages[deal.dealstage];
+			});
 			res.json(res.deals);
 		}
 	);
