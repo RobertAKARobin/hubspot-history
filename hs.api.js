@@ -52,124 +52,64 @@ module.exports = {
 		]
 	},
 	deals: function(){
+		var deals = [];
 		return [
 			function(req, res, next){
-				var Today = (new Date())._toArray();
-				var snapshotDate = new Date(
-					(parseInt(req.query.year) || Today[0]),
-					(parseInt(req.query.month) || Today[1]),
-					(parseInt(req.query.day) || Today[2])
-				);
-				var propertyNames = Array
+
+				req.apiOptions = {
+					offset: 0,
+					limit: 250,
+					propertiesWithHistory: !!(req.query.includeHistory),
+					properties:  Array
 					._fromCSV(req.query.properties)
-					._addIfDoesNotInclude('createdate')
-					._addIfDoesNotInclude('hs_createdate')
 					._addIfDoesNotInclude('dealname')
+					._addIfDoesNotInclude('createdate')
 					._addIfDoesNotInclude('dealstage')
-					._intersectionWith(Object.keys(res.properties));
-				
-				req.snapshot = {
-					propertyNames: propertyNames,
-					date: snapshotDate,
-					dateAsNumber: snapshotDate.getTime()
 				}
-				next();
-			},
-			function(req, res, next){
-				req.offset = 0;
-				req.numPerRequest = 250;
 
 				res.deals = [];
-
 				loadMoreDeals();
 
 				function loadMoreDeals(){
 					var apiRequest = HS.api({
 						method: 'GET',
 						url: 'deals/v1/deal/paged',
+						qs: req.apiOptions,
 						qsStringifyOptions: {
 							arrayFormat: 'repeat'
 						},
-						qs: {
-							limit: req.numPerRequest,
-							offset: req.offset,
-							properties: req.snapshot.propertyNames,
-							propertiesWithHistory: true
-						}
 					});
 					apiRequest(req, res, actionAfterAPIResponse);
 				}
 
 				function actionAfterAPIResponse(){
 					var apiResponse = res.apiResponse.body;
-					res.deals = res.deals.concat(apiResponse.deals);
+					deals = deals.concat(apiResponse.deals);
 					if(!apiResponse.hasMore || req.query.limitToFirst){
 						next();
 					}else{
-						req.offset = apiResponse.offset;
+						req.apiOptions.offset = apiResponse.offset;
 						loadMoreDeals();
 					}
 				}
 			},
 			function(req, res, next){
-				if(Array._fromCSV(req.query.properties).indexOf('hs_createdate') < 0){
-					req.snapshot.propertyNames._remove('hs_createdate');
-				}
-				res.deals = res.deals.filter(removeYoungDeals);
-				res.deals = res.deals.map(stripDeal);
+				var propertyNames = req.apiOptions.properties;
+				res.deals = {};
+
+				var i, l = propertyNames.length, propertyName;
+				deals.forEach(function(deal){
+					var output = {
+						dealId: deal.dealId
+					};
+					for(i = 0; i < l; i++){
+						propertyName = propertyNames[i];
+						output[propertyName] = deal.properties[propertyName].value;
+					}
+					output.dealstage = res.stages[output.dealstage];
+					res.deals[deal.dealId] = output;
+				});
 				next();
-
-				function removeYoungDeals(deal){
-					var dealCreateDate = parseInt(deal.properties.createdate.value);
-					return (dealCreateDate <= req.snapshot.dateAsNumber);
-				}
-
-				function stripDeal(deal){
-					var output = {};
-					var pIndex, pLength, propertyName, property;
-					var targetVersion, versionDate;
-					var dateAddedToHS = deal.properties.hs_createdate.timestamp;
-					var timeTolerance = 2000;
-					for(pIndex = 0; pIndex < req.snapshot.propertyNames.length; pIndex++){
-						propertyName = req.snapshot.propertyNames[pIndex];
-						property = deal.properties[propertyName];
-						if(property){
-							if(property.versions._last().timestamp - dateAddedToHS <= timeTolerance){
-								targetVersion = property.versions._last();
-							}else{
-								targetVersion = property.versions.filter(getCorrectVersion)[0];
-							}
-							if(targetVersion){
-								versionDate = new Date(targetVersion.timestamp);
-								output[propertyName] = {
-									value: formatPropertyValue(targetVersion.value, propertyName),
-									time: versionDate.toLocaleString()
-								}
-							}
-						}
-					}
-					output.dealId = deal.dealId;
-					return output;
-				}
-
-				function getCorrectVersion(propertyVersion){
-					return (propertyVersion.timestamp <= req.snapshot.dateAsNumber);
-				}
-
-				function formatPropertyValue(propertyValue, propertyName){
-					var propertyType = res.properties[propertyName].type;
-					if(propertyName == 'dealstage'){
-						return res.stages[propertyValue];
-					}else if(propertyType == 'date' || propertyType == 'datetime'){
-						return (new Date(parseInt(propertyValue)))._toArray().join('-');
-					}else if(propertyType == 'number'){
-						return parseFloat(propertyValue);
-					}else if(propertyType == 'string'){
-						return (propertyValue || '').replace(/\t/g, ' ');
-					}else{
-						return propertyValue;
-					}
-				}
 			}
 		];
 	}

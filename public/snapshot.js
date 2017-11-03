@@ -7,18 +7,13 @@ Components.snapshot = function(){
     var Today = (new Date())._toArray();
 
     var Query = {
-        year: m.stream(Location.query().year || Today[0]),
-        month: m.stream(Location.query().month || Today[1]),
-        day: m.stream(Location.query().day || Today[2]),
         properties: (Location.query().properties || '').toString().split(','),
         limitToFirst: m.stream(Location.query().limitToFirst || false),
-        includeTime: m.stream(Location.query().includeTime || false),
-        toJson: m.stream(Location.query().toJson || false)
+        includeHistory: m.stream(Location.query().includeHistory || false)
     }
 
     var state = {
-        isLoaded: false,
-        showAdvanced: false
+        isLoaded: false
     }
 
     var updateQuerystring = function(){
@@ -56,28 +51,6 @@ Components.snapshot = function(){
                 m('span')
             ]
         },
-        date: function(){
-            return m('label.row', [
-                m('p', "Take a snapshot of what date? (Y/M/D)"),
-                m('div.numbers', [
-                    m('input[type=number]', views.input(Query.year)._merge({
-                        min: 2012,
-                        max: 2022,
-                        placeholder: 'YYYY'
-                    })),
-                    m('input[type=number]', views.input(Query.month)._merge({
-                        min: 1,
-                        max: 12,
-                        placeholder: 'MM'
-                    })),
-                    m('input[type=number]', views.input(Query.day)._merge({
-                        min: 1,
-                        max: 31,
-                        placeholder: 'DD'
-                    }))
-                ])
-            ])
-        },
         properties: function(){
             return m('label.row', [
                 m('div', [
@@ -107,23 +80,6 @@ Components.snapshot = function(){
                     }, property.label || property.name)
                 }))
             ])
-        },
-        advanced: function(){
-            return [
-                m('label.row', [
-                    m('p', 'View as .json instead of .tsv?'),
-                    m('span', views.checkbox(Query.toJson))
-                ]),
-                m('label.row', [
-                    m('p', 'Download first 250 only?'),
-                    m('span', views.checkbox(Query.limitToFirst))
-                ]),
-                m('label.row', [
-                    m('p', 'For each property, display the timestamp of when it got its value?*'),
-                    m('span', views.checkbox(Query.includeTime))
-                ]),
-                m('p.instructions', "*If you create a Deal/Opportunity in Salesforce in January, and then import it into Hubspot in March, the 'createdate' will be January, but the timestamp for the Deal's properties will be March.")
-            ]
         },
         submit: function(){
             return m('div.row', [
@@ -162,15 +118,7 @@ Components.snapshot = function(){
         view: function(){
             if(state.isLoaded){
                 return [
-                    views.date(),
                     views.properties(),
-                    m('label.toggle', {
-                        active: (state.showAdvanced),
-                        onclick: function(event){
-                            state.showAdvanced = !(state.showAdvanced);
-                        }
-                    }, 'Show Advanced'),
-                    (state.showAdvanced ? views.advanced() : null),
                     views.submit()
                 ]
             }else{
