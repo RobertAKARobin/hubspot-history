@@ -41,8 +41,11 @@ module.exports = {
 			url: 'deals/v1/pipelines/default'
 		}),
 		function(req, res, next){
-			res.stages = res.apiResponse.body.stages._mapToObject(function(object, stage){
-				object[stage.stageId] = stage.label;
+			res.stages = res.apiResponse.body.stages._mapToObject(function(stage){
+				return {
+					key: stage.stageId,
+					value: stage.label
+				}
 			});
 			next();
 		}
@@ -77,6 +80,33 @@ module.exports = {
 				}else{
 					req.apiOptions.offset = apiResponse.offset;
 					loadMoreDeals();
+				}
+			}
+		},
+		function(req, res, next){
+			var includeVersions = req.apiOptions.propertiesWithHistory;
+			res.deals = res.deals._mapToObject(function(deal){
+				var output = {
+					dealId: deal.dealId,
+					versions: {}
+				}
+				for(var propertyName in deal.properties){
+					output[propertyName] = deal.properties[propertyName].value;
+					if(includeVersions){
+						output.versions[propertyName] = deal.properties[propertyName].versions.map(getVersionData);
+					}
+				}
+				return {
+					key: deal.dealId,
+					value: output
+				}
+			});
+			next();
+
+			function getVersionData(version){
+				return {
+					timestamp: version.timestamp,
+					value: version.value
 				}
 			}
 		}

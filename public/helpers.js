@@ -43,8 +43,10 @@ Array.prototype._intersectionWith = function(comparator){
 Array.prototype._mapToObject = function(callback){
 	var array = this;
 	var output = {};
+	var mappedItem;
 	for(var i = 0; i < array.length; i++){
-		callback(output, array[i]);
+		mappedItem = callback(array[i]);
+		output[mappedItem.key] = mappedItem.value;
 	}
 	return output;
 }
