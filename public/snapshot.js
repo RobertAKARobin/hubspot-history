@@ -5,23 +5,29 @@ Components.snapshot = function(){
     var Deals = [];
     var RequestedProperties = [];
     var DealProperties = [];
+    var DealPropertiesByName = {};
 
     var Query = {
-        properties: (Location.query().properties || '').toString().split(','),
-        limitToFirst: m.stream(Location.query().limitToFirst || false),
-        includeHistory: m.stream(Location.query().includeHistory || false)
+        properties: (Location.query().properties || false),
+        limitToFirst: (Location.query().limitToFirst || false),
+        includeHistory: (Location.query().includeHistory || false)
     }
 
     var state = {
         isLoaded: false
     }
 
-    var updateQuerystring = function(){
-        var qs = JSON.parse(JSON.stringify(Query));
-        qs.properties = qs.properties.join(',');
-        for(var propertyName in qs){
-            if(qs[propertyName] == false){
-                delete qs[propertyName];
+    var addPropertyToQueryString = function(event){
+        var element = event.target;
+        var propertyName = element.getAttribute('propertyName');
+        var qs = {};
+
+        Query.properties = (Query.properties ? Query.properties.split(',') : []);
+        Query.properties._addIfDoesNotInclude(propertyName);
+        Query.properties = Query.properties.join(',');
+        for(var propertyName in Query){
+            if(Query[propertyName]){
+                qs[propertyName] = Query[propertyName];
             }
         }
         Location.query(qs, true);
@@ -66,32 +72,28 @@ Components.snapshot = function(){
         },
         properties: function(){
             return m('label', [
-                m('div', [
-                    m('p', "Which Deal properties should be included in the snapshot?"),
-                    m('p.instructions', "'Deal ID', 'Deal Name', 'Deal Stage', and 'Create Date' are always included."),
-                    m('p.instructions', "Select multiple by holding 'Shift' or 'Command'/'Control' while you click.")
+                m('p', "Which Deal properties should be included in the snapshot?"),
+                m('div.select', [
+                    m('table', [
+                        DealProperties.map(function(property){
+                            return m('tr', [
+                                m('td', {
+                                    propertyName: property.name,
+                                    onclick: addPropertyToQueryString
+                                }, property.label)
+                            ])
+                        })
+                    ])
                 ]),
-                m('select', {
-                    multiple: true,
-                    onchange: function(event){
-                        event.redraw = false;
-                        var select = event.target;
-                        var options = select.options;
-                        var properties = [];
-                        for(var i = 0; i < options.length; i++){
-                            if(options[i].selected){
-                                properties.push(options[i].value);
-                            }
-                        }
-                        Query.properties = properties;
-                        updateQuerystring();
-                    }
-                }, DealProperties.map(function(property){
-                    return m('option', {
-                        value: property.name,
-                        selected: Query.properties.includes(property.name)
-                    }, property.label || property.name)
-                }))
+                m('div.select', [
+                    m('table', [
+                        Query.properties.split(',').map(function(propertyName){
+                            return m('tr', [
+                                m('td', DealPropertiesByName[propertyName].label)
+                            ])
+                        })
+                    ])
+                ])
             ])
         },
         dealHeaders: function(){
@@ -128,7 +130,8 @@ Components.snapshot = function(){
                     defaultProperties.forEach(function(propertyName){
                         delete response[propertyName];
                     });
-                    DealProperties = Object.values(response)._sortOn(function(item){
+                    DealPropertiesByName = response;
+                    DealProperties = Object.values(DealPropertiesByName)._sortOn(function(item){
                         return (item.label || item.name);
                     });
                     state.isLoaded = true;

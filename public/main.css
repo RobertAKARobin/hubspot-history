@@ -46,7 +46,7 @@ p{
 	text-align:justify;
 }
 h1,h2,h3,h4,h5,h6,
-p, label, button, select{
+p, label, button, select, .select{
 	margin-bottom:10px;
 }
 .instructions{
@@ -141,6 +141,7 @@ button:hover{
 table{
 	border-spacing:0;
 	border-collapse:collapse;
+	width:100%;
 }
 th{
 	font-family:'Roboto Slab', serif;
@@ -151,4 +152,20 @@ td, th{
 	vertical-align:top;
 	border-bottom:1px solid #eee;
 	padding:2px 4px;
+}
+
+.select{
+	max-height:150px;
+	width:100%;
+	overflow-y:scroll;
+	background-color:#fff;
+}
+.select td{
+	font-size:14px;
+	line-height:18px;
+	border:0;
+	padding:0 10px;
+}
+.select td:hover{
+	background-color:#f6f6f6;
 }
