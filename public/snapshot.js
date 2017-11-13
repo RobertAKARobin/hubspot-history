@@ -3,10 +3,10 @@
 Components.snapshot = function(){
 
     var Deals = [];
-    var RequestedProperties = [];
     var DealProperties = [];
     var DealPropertiesByName = {};
-    var DefaultDealProperties = ['createdate', 'dealname', 'dealstage'];
+    var DefaultDealProperties = ['dealname', 'createdate', 'dealstage'];
+    var RequestedDealProperties = [];
 
     var Query = {
         properties: (Location.query().properties ? Location.query().properties.split(',') : []),
@@ -22,17 +22,13 @@ Components.snapshot = function(){
 
     var addPropertyToQueryString = function(event){
         var propertyName = event.target.getAttribute('propertyName');
-        if(!DefaultDealProperties.includes(propertyName)){
-            Query.properties._addIfDoesNotInclude(propertyName);
-            updateQueryString();
-        }
+        Query.properties._addIfDoesNotInclude(propertyName);
+        updateQueryString();
     }
     var removePropertyFromQueryString = function(event){
         var propertyName = event.target.getAttribute('propertyName');
-        if(!DefaultDealProperties.includes(propertyName)){
-            Query.properties._remove(event.target.getAttribute('propertyName'));
-            updateQueryString();
-        }
+        Query.properties._remove(event.target.getAttribute('propertyName'));
+        updateQueryString();
     }
     var updateQueryString = function(){
         var qs = {};
@@ -61,12 +57,12 @@ Components.snapshot = function(){
         }
     }
     var formatDealProperties = function(deal){
-        RequestedProperties.forEach(formatDealProperty.bind(deal));
+        RequestedDealProperties.forEach(formatDealProperty.bind(deal));
     }
-    var formatDealProperty = function(property){
+    var formatDealProperty = function(propertyName){
         var deal = this;
-        var value = deal[property.name];
-        switch(property.type){
+        var value = deal[propertyName];
+        switch(DealPropertiesByName[propertyName].type){
             case 'datetime':
                 value = (new Date(parseInt(value)))._toPrettyString();
                 break;
@@ -74,7 +70,7 @@ Components.snapshot = function(){
                 value = (parseFloat(value) || 0);
                 break;
         }
-        deal[property.name] = value;
+        deal[propertyName] = value;
     }
 
     var views = {
@@ -109,7 +105,7 @@ Components.snapshot = function(){
                         DealProperties.map(function(property){
                             return m('tr', [
                                 m('td', {
-                                    isHidden: (Query.properties.includes(property.name)),
+                                    isHidden: (DefaultDealProperties.includes(property.name) || Query.properties.includes(property.name)),
                                     propertyName: property.name,
                                     onclick: addPropertyToQueryString
                                 }, property.label)
@@ -121,11 +117,12 @@ Components.snapshot = function(){
                 m('div.select', [
                     m('table', [
                         DefaultDealProperties.concat(Query.properties).map(function(propertyName){
+                            var isDefaultDealProperty = DefaultDealProperties.includes(propertyName);
                             return m('tr', [
                                 m('td', {
-                                    disabled: (DefaultDealProperties.includes(propertyName)),
+                                    disabled: isDefaultDealProperty,
                                     propertyName: propertyName,
-                                    onclick: removePropertyFromQueryString
+                                    onclick: (isDefaultDealProperty ? null : removePropertyFromQueryString)
                                 }, DealPropertiesByName[propertyName].label)
                             ])
                         })
@@ -136,9 +133,10 @@ Components.snapshot = function(){
         dealHeaders: function(){
             return m('tr', [
                 m('th', 'Id'),
-                RequestedProperties.map(function(property){
+                RequestedDealProperties.map(function(propertyName){
+                    var property = DealPropertiesByName[propertyName];
                     return m('th', {
-                        propertyType: DealPropertiesByName[property.name].type,
+                        propertyType: property.type,
                         sortProperty: property.name,
                         sortDirection: (state.sortProperty == property.name ? state.sortDirection : false),
                         onclick: sortOnColumn
@@ -149,13 +147,14 @@ Components.snapshot = function(){
         dealRow: function(deal){
             return m('tr', [
                 m('td', deal.dealId),
-                RequestedProperties.map(views.dealColumn.bind(deal))
+                RequestedDealProperties.map(views.dealColumn.bind(deal))
             ])
         },
-        dealColumn: function(property){
+        dealColumn: function(propertyName){
             var deal = this;
+            var property = DealPropertiesByName[propertyName];
             return m('td', {
-                propertyType: DealPropertiesByName[property.name].type,
+                propertyType: property.type,
             }, deal[property.name]);
         }
     }
@@ -187,13 +186,15 @@ Components.snapshot = function(){
                             views.properties(),
                             m('button', {
                                 onclick: function(event){
+                                    var qs = JSON.parse(JSON.stringify(Location.query()));
+                                    qs.properties = DefaultDealProperties.concat(qs.properties).join(',');
                                     Deals = [];
                                     m.request({
                                         method: 'GET',
                                         url: './deals/snapshot',
-                                        data: Location.query()
+                                        data: qs
                                     }).then(function(response){
-                                        RequestedProperties = Object.values(response.requestedProperties);
+                                        RequestedDealProperties = Object.keys(response.requestedProperties);
                                         Deals = Object.values(response.deals);
                                         Deals.forEach(formatDealProperties);
                                     });
