@@ -13,7 +13,7 @@ var HS = hsAPIWrapper({
 
 module.exports = {
 	auth: HS.auth,
-	properties: [
+	getProperties: [
 		HS.api({
 			method: 'GET',
 			url: 'properties/v1/deals/properties'
@@ -35,7 +35,7 @@ module.exports = {
 			next();
 		}
 	],
-	stages: [
+	getStages: [
 		HS.api({
 			method: 'GET',
 			url: 'deals/v1/pipelines/default'
@@ -50,7 +50,7 @@ module.exports = {
 			next();
 		}
 	],
-	deals: [
+	getDeals: [
 		function(req, res, next){
 
 			req.apiOptions = (req.apiOptions || {});
