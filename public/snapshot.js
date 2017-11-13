@@ -129,7 +129,7 @@ Components.snapshot = function(){
                         delete response[propertyName];
                     });
                     DealProperties = Object.values(response)._sortOn(function(item){
-                        return (item.name || item.label);
+                        return (item.label || item.name);
                     });
                     state.isLoaded = true;
                 }
