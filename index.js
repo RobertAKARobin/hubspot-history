@@ -52,12 +52,13 @@ httpServer
 		function(req, res, next){
 			req.apiOptions = {
 				propertiesWithHistory: !!(req.query.includeHistory),
-				properties:  Array._fromCSV(req.query.properties)
+				properties: Array._fromCSV(req.query.properties)
 					._addIfDoesNotInclude('dealname')
 					._addIfDoesNotInclude('createdate')
 					._addIfDoesNotInclude('dealstage')
 			}
-			req.limitToFirst = req.query.limitToFirst;
+			req.limitToFirst = true;
+			// req.limitToFirst = req.query.limitToFirst;
 			next();
 		},
 		HS.getDeals,
@@ -65,6 +66,9 @@ httpServer
 			Object.values(res.deals).forEach(function(deal){
 				deal.dealstage = res.stages[deal.dealstage];
 			});
-			res.json(res.deals);
+			res.json({
+				requestedProperties: req.apiOptions.properties,
+				deals: res.deals
+			});
 		}
 	);

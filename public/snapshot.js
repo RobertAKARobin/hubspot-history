@@ -2,6 +2,8 @@
 
 Components.snapshot = function(){
 
+    var Deals = [];
+    var RequestedProperties = [];
     var DealProperties = [];
 
     var Query = {
@@ -78,6 +80,26 @@ Components.snapshot = function(){
                     }, property.label || property.name)
                 }))
             ])
+        },
+        dealHeaders: function(){
+            return m('tr', [
+                m('th', 'Id'),
+                RequestedProperties.map(function(property){
+                    return m('th', property.label)
+                })
+            ])
+        },
+        dealRow: function(deal){
+            return m('tr', [
+                m('td', [
+                    m('td', deal.dealId),
+                    RequestedProperties.map.call(deal, views.dealColumn)
+                ])
+            ])
+        },
+        dealColumn: function(property){
+            var deal = this;
+            return m('td', deal[property.name]);
         }
     }
 
@@ -110,13 +132,26 @@ Components.snapshot = function(){
                         views.properties(),
                         m('button', {
                             onclick: function(event){
-                                event.redraw = false;
-                                window.open('./deals/snapshot' + window.location.search);
+                                Deals = [];
+                                m.request({
+                                    method: 'GET',
+                                    url: './deals/snapshot'
+                                }).then(function(response){
+                                    RequestedProperties = Object.values(response.requestedProperties);
+                                    Deals = Object.values(response.deals);
+                                });
                             }
                         }, 'Load')
                     ]),
                     m('div.output', [
-                        'Table'
+                        m('table', [
+                            m('thead', [
+                                views.dealHeaders()
+                            ]),
+                            m('tbody', [
+                                Deals.map(views.dealRow)
+                            ])
+                        ])
                     ])
                 ])
             }else{
