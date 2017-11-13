@@ -50,7 +50,7 @@ Components.snapshot = function(){
             ]
         },
         properties: function(){
-            return m('label.row', [
+            return m('label', [
                 m('div', [
                     m('p', "Which Deal properties should be included in the snapshot?"),
                     m('p.instructions', "'Deal ID', 'Deal Name', 'Deal Stage', and 'Create Date' are always included."),
@@ -87,7 +87,7 @@ Components.snapshot = function(){
                         event.redraw = false;
                         window.open('./deals/snapshot' + window.location.search);
                     }
-                }, 'Download')
+                }, 'Load')
             ])
         }
     }
@@ -116,8 +116,12 @@ Components.snapshot = function(){
         view: function(){
             if(state.isLoaded){
                 return [
-                    views.properties(),
-                    views.submit()
+                    m('div.controls', [
+                        m('h1', 'Hubspot Snapshot'),
+                        views.properties(),
+                        views.submit()
+                    ]),
+                    m('div')
                 ]
             }else{
                 return [

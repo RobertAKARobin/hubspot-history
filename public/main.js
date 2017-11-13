@@ -14,20 +14,5 @@ Location.query = function(paramsObject, doClear){
 }
 
 window.addEventListener('DOMContentLoaded', function(){
-	var mounts = document.querySelectorAll('[data-mount]');
-	var alreadyMounted = {};
-
-	for(var i = 0; i < mounts.length; i++){
-		mounts[i].addEventListener('click', triggerMounting);
-	}
-
-	function triggerMounting(event){
-		var triggerElement = event.target;
-		var targetName = triggerElement.getAttribute('data-mount');
-		if(!alreadyMounted[targetName]){
-			triggerElement.parentNode.removeChild(triggerElement);
-			m.mount(document.getElementById(targetName), Components[targetName]);
-		}
-		alreadyMounted[targetName] = true;
-	}
+	m.mount(document.getElementById('snapshot'), Components.snapshot);
 });
