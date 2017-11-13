@@ -26,6 +26,19 @@ Components.snapshot = function(){
         }
         Location.query(qs, true);
     }
+    var formatDealProperties = function(deal){
+        RequestedProperties.forEach(formatDealProperty.bind(deal));
+    }
+    var formatDealProperty = function(property){
+        var deal = this;
+        var value = deal[property.name];
+        switch(property.type){
+            case 'datetime':
+                value = (new Date(parseInt(value)))._toPrettyString();
+                break;
+        }
+        deal[property.name] = value;
+    }
 
     var views = {
         input: function(stream){
@@ -90,21 +103,14 @@ Components.snapshot = function(){
             ])
         },
         dealRow: function(deal){
-            var mapDealColumn = views.dealColumn.bind(deal);
             return m('tr', [
                 m('td', deal.dealId),
-                RequestedProperties.map(mapDealColumn)
+                RequestedProperties.map(views.dealColumn.bind(deal))
             ])
         },
         dealColumn: function(property){
             var deal = this;
-            var value = deal[property.name];
-            switch(property.type){
-                case 'datetime':
-                    value = (new Date(parseInt(value)))._toArray().join('');
-                    break;
-            }
-            return m('td', value);
+            return m('td', deal[property.name]);
         }
     }
 
@@ -144,6 +150,7 @@ Components.snapshot = function(){
                                 }).then(function(response){
                                     RequestedProperties = Object.values(response.requestedProperties);
                                     Deals = Object.values(response.deals);
+                                    Deals.forEach(formatDealProperties);
                                 });
                             }
                         }, 'Load')

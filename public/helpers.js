@@ -2,6 +2,10 @@
 
 //TODO: Nest all these in some kind of helpers object
 
+Number.prototype._leftpad = function(places){
+	var number = this;
+	return (Array(places || 1).join('0') + number).slice(0 - places);
+}
 Array._fromCSV = function(string){
 	string = (string || '').trim();
 	return (string ? string.split(',') : []);
@@ -70,17 +74,19 @@ Array.prototype._remove = function(item){
 	}
 	return array;
 }
-Date.prototype._getMonthWithZeroes = function(){
+Date.prototype._toPrettyString = function(){
 	var date = this;
-	return ('0' + (date.getMonth()+1)).slice(-2);
-}
-Date.prototype._getDateWithZeroes = function(){
-	var date = this;
-	return ('0' + date.getDate()).slice(-2);
-}
-Date.prototype._toArray = function(){
-	var date = this;
-	return [date.getFullYear(), date._getMonthWithZeroes(), date._getDateWithZeroes()];
+	return [
+		date.getFullYear().toString().slice(-2),
+		'/',
+		(date.getMonth() + 1)._leftpad(2),
+		'/',
+		date.getDay()._leftpad(2),
+		' ',
+		date.getHours()._leftpad(2),
+		':',
+		date.getMinutes()._leftpad(2)
+	].join('');
 }
 Object.defineProperty(Object.prototype, '_merge', {
 	enumerable: false,
