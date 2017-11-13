@@ -138,25 +138,27 @@ Components.snapshot = function(){
         view: function(){
             if(state.isLoaded){
                 return m('div.wrap', [
-                    m('div.controls', [
-                        m('h1', 'Hubspot Snapshot'),
-                        views.properties(),
-                        m('button', {
-                            onclick: function(event){
-                                Deals = [];
-                                m.request({
-                                    method: 'GET',
-                                    url: './deals/snapshot',
-                                    data: Location.query()
-                                }).then(function(response){
-                                    RequestedProperties = Object.values(response.requestedProperties);
-                                    Deals = Object.values(response.deals);
-                                    Deals.forEach(formatDealProperties);
-                                });
-                            }
-                        }, 'Load')
+                    m('div.sidebar', [
+                        m('div', [
+                            m('h1', 'Hubspot Snapshot'),
+                            views.properties(),
+                            m('button', {
+                                onclick: function(event){
+                                    Deals = [];
+                                    m.request({
+                                        method: 'GET',
+                                        url: './deals/snapshot',
+                                        data: Location.query()
+                                    }).then(function(response){
+                                        RequestedProperties = Object.values(response.requestedProperties);
+                                        Deals = Object.values(response.deals);
+                                        Deals.forEach(formatDealProperties);
+                                    });
+                                }
+                            }, 'Load')
+                        ])
                     ]),
-                    m('div.output', [
+                    m('div.body', [
                         m('table', [
                             m('thead', [
                                 views.dealHeaders()
