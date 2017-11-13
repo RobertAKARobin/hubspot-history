@@ -24,9 +24,6 @@ html, body{
 }
 body{
 	width:100%;
-	min-width:320px;
-	max-width:600px;
-	padding:10px;
 	margin:0 auto;
 }
 h1{
@@ -53,6 +50,9 @@ a{
 p{
 	display:block;
 	text-align:justify;
+}
+h1,h2,h3,h4,h5,h6,
+p, label, button, select{
 	margin-bottom:10px;
 }
 .instructions{
@@ -63,26 +63,10 @@ p{
 label{
 	cursor:pointer;
 }
-.row{
-	display:flex;
-}
-.row > *{
-	flex-basis:50%;
-	flex-grow:1;
-	margin-top:10px;
-}
-.row > :first-child{
-	padding-right:10px;
-}
-section{
-	border:5px solid #ccc;
-	background-color:#eee;
-	margin-bottom:20px;
-	padding:10px;
-}
 select{
 	height:200px;
 	width:100%;
+	padding:0 10px;
 	resize:vertical;
 }
 input, select{
@@ -91,9 +75,6 @@ input, select{
 }
 input{
 	padding:5px 10px;
-}
-select{
-	padding:10px;
 }
 input[type=checkbox]{
 	position:absolute;
@@ -127,14 +108,9 @@ input[type=checkbox]:checked+span:after{
 input[type=checkbox]:not(:checked)+span:after{
 	color:#ccc;
 }
-.numbers{
-	display:flex;
-}
-.numbers input{
-	flex-grow:1;
-}
 button{
 	display:block;
+	width:100%;
 	cursor:pointer;
 	padding:0 30px;
 	line-height:30px;
@@ -145,16 +121,19 @@ button{
 button:hover{
 	background-color:#00f;
 }
-.toggle{
-	cursor:pointer;
-	text-decoration:underline;
+
+.wrap{
+	display:flex;
+	flex-direction:row;
+	min-height:100vh;
 }
-.toggle:hover{
-	color:#00f;
+.wrap > .controls{
+	flex-basis:300px;
+	flex-grow:0;
+	padding:10px;
+	background-color:#eee;
 }
-.toggle:after{
-	content:'\25b8';
-}
-.toggle[active]:after{
-	content:'\25be';
+.wrap > .output{
+	flex-grow:1;
+	padding:10px;
 }

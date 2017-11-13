@@ -78,17 +78,6 @@ Components.snapshot = function(){
                     }, property.label || property.name)
                 }))
             ])
-        },
-        submit: function(){
-            return m('div.row', [
-                m('p'),
-                m('button', {
-                    onclick: function(event){
-                        event.redraw = false;
-                        window.open('./deals/snapshot' + window.location.search);
-                    }
-                }, 'Load')
-            ])
         }
     }
 
@@ -115,14 +104,21 @@ Components.snapshot = function(){
         },
         view: function(){
             if(state.isLoaded){
-                return [
+                return m('div.wrap', [
                     m('div.controls', [
                         m('h1', 'Hubspot Snapshot'),
                         views.properties(),
-                        views.submit()
+                        m('button', {
+                            onclick: function(event){
+                                event.redraw = false;
+                                window.open('./deals/snapshot' + window.location.search);
+                            }
+                        }, 'Load')
                     ]),
-                    m('div')
-                ]
+                    m('div.output', [
+                        'Table'
+                    ])
+                ])
             }else{
                 return [
                     m('p', 'Loading Deal properties...')
