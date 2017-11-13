@@ -90,12 +90,21 @@ Components.snapshot = function(){
             ])
         },
         dealRow: function(deal){
+            var mapDealColumn = views.dealColumn.bind(deal);
             return m('tr', [
                 m('td', deal.dealId),
-                RequestedProperties.map(function(property){
-                    return m('td', deal[property.name])
-                })
+                RequestedProperties.map(mapDealColumn)
             ])
+        },
+        dealColumn: function(property){
+            var deal = this;
+            var value = deal[property.name];
+            switch(property.type){
+                case 'datetime':
+                    value = (new Date(parseInt(value)))._toArray().join('');
+                    break;
+            }
+            return m('td', value);
         }
     }
 
