@@ -132,10 +132,13 @@ Components.snapshot = function(){
         },
         dealHeaders: function(){
             return m('tr', [
-                m('th', 'Id'),
+                m('th', {
+                    title: 'dealId'
+                }, 'Id'),
                 RequestedDealProperties.map(function(propertyName){
                     var property = DealPropertiesByName[propertyName];
                     return m('th', {
+                        title: property.name,
                         propertyType: property.type,
                         sortProperty: property.name,
                         sortDirection: (state.sortProperty == property.name ? state.sortDirection : false),
