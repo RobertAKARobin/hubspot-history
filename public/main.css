@@ -167,7 +167,11 @@ td, th{
 	border:0;
 	padding:0 10px;
 }
-.select td:hover{
+.select td[disabled]{
+	color:#999;
+	cursor:default;
+}
+.select td:not([disabled]):hover{
 	background-color:#f6f6f6;
 }
 [isHidden]{
@@ -188,4 +192,7 @@ td, th{
 }
 [sortDirection='asc']:before{
 	content:'\2193';
+}
+[propertyType='number']{
+	text-align:right;
 }

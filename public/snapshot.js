@@ -6,6 +6,7 @@ Components.snapshot = function(){
     var RequestedProperties = [];
     var DealProperties = [];
     var DealPropertiesByName = {};
+    var DefaultDealProperties = ['createdate', 'dealname', 'dealstage'];
 
     var Query = {
         properties: (Location.query().properties ? Location.query().properties.split(',') : []),
@@ -20,12 +21,18 @@ Components.snapshot = function(){
     }
 
     var addPropertyToQueryString = function(event){
-        Query.properties._addIfDoesNotInclude(event.target.getAttribute('propertyName'));
-        updateQueryString();
+        var propertyName = event.target.getAttribute('propertyName');
+        if(!DefaultDealProperties.includes(propertyName)){
+            Query.properties._addIfDoesNotInclude(propertyName);
+            updateQueryString();
+        }
     }
     var removePropertyFromQueryString = function(event){
-        Query.properties._remove(event.target.getAttribute('propertyName'));
-        updateQueryString();
+        var propertyName = event.target.getAttribute('propertyName');
+        if(!DefaultDealProperties.includes(propertyName)){
+            Query.properties._remove(event.target.getAttribute('propertyName'));
+            updateQueryString();
+        }
     }
     var updateQueryString = function(){
         var qs = {};
@@ -40,8 +47,14 @@ Components.snapshot = function(){
     var sortOnColumn = function(event){
         state.sortProperty = event.target.getAttribute('sortProperty');
         state.sortDirection = (state.sortDirection == 'asc' ? 'desc' : 'asc');
+
+        var isNumber = (DealPropertiesByName[state.sortProperty].type == 'number');
         Deals._sortOn(function(deal){
-            return deal[state.sortProperty].toString().toLowerCase().replace(/[^a-zA-Z0-9]/g,'');
+            if(isNumber){
+                return parseFloat(deal[state.sortProperty]);
+            }else{
+                return deal[state.sortProperty].toString().toLowerCase().replace(/[^a-zA-Z0-9]/g,'');
+            }
         });
         if(state.sortDirection == 'asc'){
             Deals.reverse();
@@ -56,6 +69,9 @@ Components.snapshot = function(){
         switch(property.type){
             case 'datetime':
                 value = (new Date(parseInt(value)))._toPrettyString();
+                break;
+            case 'number':
+                value = (parseFloat(value) || 0);
                 break;
         }
         deal[property.name] = value;
@@ -104,9 +120,10 @@ Components.snapshot = function(){
                 m('p', "De-select properties:"),
                 m('div.select', [
                     m('table', [
-                        Query.properties.map(function(propertyName){
+                        DefaultDealProperties.concat(Query.properties).map(function(propertyName){
                             return m('tr', [
                                 m('td', {
+                                    disabled: (DefaultDealProperties.includes(propertyName)),
                                     propertyName: propertyName,
                                     onclick: removePropertyFromQueryString
                                 }, DealPropertiesByName[propertyName].label)
@@ -121,6 +138,7 @@ Components.snapshot = function(){
                 m('th', 'Id'),
                 RequestedProperties.map(function(property){
                     return m('th', {
+                        propertyType: DealPropertiesByName[property.name].type,
                         sortProperty: property.name,
                         sortDirection: (state.sortProperty == property.name ? state.sortDirection : false),
                         onclick: sortOnColumn
@@ -136,7 +154,9 @@ Components.snapshot = function(){
         },
         dealColumn: function(property){
             var deal = this;
-            return m('td', deal[property.name]);
+            return m('td', {
+                propertyType: DealPropertiesByName[property.name].type,
+            }, deal[property.name]);
         }
     }
 
@@ -150,10 +170,6 @@ Components.snapshot = function(){
                 if(response.statusCode == 401){
                     location.href = "/authorize/reset";
                 }else{
-                    var defaultProperties = ['createdate', 'dealname', 'dealstage'];
-                    defaultProperties.forEach(function(propertyName){
-                        delete response[propertyName];
-                    });
                     DealPropertiesByName = response;
                     DealProperties = Object.values(DealPropertiesByName)._sortOn(function(item){
                         return (item.label || item.name);
