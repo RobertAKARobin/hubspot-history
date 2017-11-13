@@ -146,7 +146,8 @@ Components.snapshot = function(){
                                 Deals = [];
                                 m.request({
                                     method: 'GET',
-                                    url: './deals/snapshot'
+                                    url: './deals/snapshot',
+                                    data: Location.query()
                                 }).then(function(response){
                                     RequestedProperties = Object.values(response.requestedProperties);
                                     Deals = Object.values(response.deals);
