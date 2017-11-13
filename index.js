@@ -50,12 +50,24 @@ httpServer
 		HS.getProperties,
 		HS.getStages,
 		function(req, res, next){
+			var allProperties = res.properties;
+			var acceptableProperties = {};
+			var requestedProperties = Array._fromCSV(req.query.properties)
+				._addIfDoesNotInclude('dealname')
+				._addIfDoesNotInclude('createdate')
+				._addIfDoesNotInclude('dealstage');
+			Object.values(requestedProperties).forEach(function(propertyName){
+				if(allProperties[propertyName]){
+					acceptableProperties[propertyName] = allProperties[propertyName];
+				}
+			});
+			req.properties = acceptableProperties;
+			next();
+		},
+		function(req, res, next){
 			req.apiOptions = {
 				propertiesWithHistory: !!(req.query.includeHistory),
-				properties: Array._fromCSV(req.query.properties)
-					._addIfDoesNotInclude('dealname')
-					._addIfDoesNotInclude('createdate')
-					._addIfDoesNotInclude('dealstage')
+				properties: Object.keys(req.properties)
 			}
 			req.limitToFirst = true;
 			// req.limitToFirst = req.query.limitToFirst;
@@ -67,7 +79,7 @@ httpServer
 				deal.dealstage = res.stages[deal.dealstage];
 			});
 			res.json({
-				requestedProperties: req.apiOptions.properties,
+				requestedProperties: req.properties,
 				deals: res.deals
 			});
 		}

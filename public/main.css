@@ -137,3 +137,18 @@ button:hover{
 	flex-grow:1;
 	padding:10px;
 }
+
+table{
+	border-spacing:0;
+	border-collapse:collapse;
+}
+th{
+	font-family:'Roboto Slab', serif;
+	font-weight:bold;
+}
+td, th{
+	text-align:left;
+	vertical-align:top;
+	border-bottom:1px solid #eee;
+	padding:2px 4px;
+}

@@ -91,15 +91,11 @@ Components.snapshot = function(){
         },
         dealRow: function(deal){
             return m('tr', [
-                m('td', [
-                    m('td', deal.dealId),
-                    RequestedProperties.map.call(deal, views.dealColumn)
-                ])
+                m('td', deal.dealId),
+                RequestedProperties.map(function(property){
+                    return m('td', deal[property.name])
+                })
             ])
-        },
-        dealColumn: function(property){
-            var deal = this;
-            return m('td', deal[property.name]);
         }
     }
 
