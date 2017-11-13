@@ -14,7 +14,9 @@ Components.snapshot = function(){
     }
 
     var state = {
-        isLoaded: false
+        isLoaded: false,
+        sortProperty: false,
+        sortDirection: false
     }
 
     var addPropertyToQueryString = function(event){
@@ -34,6 +36,16 @@ Components.snapshot = function(){
         }
         qs.properties = Query.properties.join(',');
         Location.query(qs, true);
+    }
+    var sortOnColumn = function(event){
+        state.sortProperty = event.target.getAttribute('sortProperty');
+        state.sortDirection = (state.sortDirection == 'asc' ? 'desc' : 'asc');
+        Deals._sortOn(function(deal){
+            return deal[state.sortProperty].toString().toLowerCase().replace(/[^a-zA-Z0-9]/g,'');
+        });
+        if(state.sortDirection == 'asc'){
+            Deals.reverse();
+        }
     }
     var formatDealProperties = function(deal){
         RequestedProperties.forEach(formatDealProperty.bind(deal));
@@ -108,7 +120,11 @@ Components.snapshot = function(){
             return m('tr', [
                 m('th', 'Id'),
                 RequestedProperties.map(function(property){
-                    return m('th', property.label)
+                    return m('th', {
+                        sortProperty: property.name,
+                        sortDirection: (state.sortProperty == property.name ? state.sortDirection : false),
+                        onclick: sortOnColumn
+                    }, property.label)
                 })
             ])
         },

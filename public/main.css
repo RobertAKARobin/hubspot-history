@@ -173,3 +173,19 @@ td, th{
 [isHidden]{
 	display:none;
 }
+[sortProperty]{
+	cursor:pointer;
+	text-decoration:underline;
+}
+[sortProperty]:hover{
+	color:#00f;
+}
+[sortDirection]{
+	color:#00f;
+}
+[sortDirection='desc']:before{
+	content:'\2191';
+}
+[sortDirection='asc']:before{
+	content:'\2193';
+}
