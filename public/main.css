@@ -156,6 +156,7 @@ td, th{
 
 .select{
 	max-height:150px;
+	min-height:18px;
 	width:100%;
 	overflow-y:scroll;
 	background-color:#fff;
@@ -168,4 +169,7 @@ td, th{
 }
 .select td:hover{
 	background-color:#f6f6f6;
+}
+[isHidden]{
+	display:none;
 }

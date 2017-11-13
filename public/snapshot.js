@@ -8,7 +8,7 @@ Components.snapshot = function(){
     var DealPropertiesByName = {};
 
     var Query = {
-        properties: (Location.query().properties || false),
+        properties: (Location.query().properties ? Location.query().properties.split(',') : []),
         limitToFirst: (Location.query().limitToFirst || false),
         includeHistory: (Location.query().includeHistory || false)
     }
@@ -18,18 +18,21 @@ Components.snapshot = function(){
     }
 
     var addPropertyToQueryString = function(event){
-        var element = event.target;
-        var propertyName = element.getAttribute('propertyName');
+        Query.properties._addIfDoesNotInclude(event.target.getAttribute('propertyName'));
+        updateQueryString();
+    }
+    var removePropertyFromQueryString = function(event){
+        Query.properties._remove(event.target.getAttribute('propertyName'));
+        updateQueryString();
+    }
+    var updateQueryString = function(){
         var qs = {};
-
-        Query.properties = (Query.properties ? Query.properties.split(',') : []);
-        Query.properties._addIfDoesNotInclude(propertyName);
-        Query.properties = Query.properties.join(',');
         for(var propertyName in Query){
             if(Query[propertyName]){
                 qs[propertyName] = Query[propertyName];
             }
         }
+        qs.properties = Query.properties.join(',');
         Location.query(qs, true);
     }
     var formatDealProperties = function(deal){
@@ -72,12 +75,13 @@ Components.snapshot = function(){
         },
         properties: function(){
             return m('label', [
-                m('p', "Which Deal properties should be included in the snapshot?"),
+                m('p', "Select properties:"),
                 m('div.select', [
                     m('table', [
                         DealProperties.map(function(property){
                             return m('tr', [
                                 m('td', {
+                                    isHidden: (Query.properties.includes(property.name)),
                                     propertyName: property.name,
                                     onclick: addPropertyToQueryString
                                 }, property.label)
@@ -85,11 +89,15 @@ Components.snapshot = function(){
                         })
                     ])
                 ]),
+                m('p', "De-select properties:"),
                 m('div.select', [
                     m('table', [
-                        Query.properties.split(',').map(function(propertyName){
+                        Query.properties.map(function(propertyName){
                             return m('tr', [
-                                m('td', DealPropertiesByName[propertyName].label)
+                                m('td', {
+                                    propertyName: propertyName,
+                                    onclick: removePropertyFromQueryString
+                                }, DealPropertiesByName[propertyName].label)
                             ])
                         })
                     ])
