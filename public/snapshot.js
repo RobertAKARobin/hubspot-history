@@ -21,13 +21,13 @@ Components.snapshot = function(){
     }
 
     var addPropertyToQueryString = function(event){
-        var propertyName = event.target.getAttribute('propertyName');
+        var propertyName = event.target.getAttribute('data-propertyName');
         Query.properties._addIfDoesNotInclude(propertyName);
         updateQueryString();
     }
     var removePropertyFromQueryString = function(event){
-        var propertyName = event.target.getAttribute('propertyName');
-        Query.properties._remove(event.target.getAttribute('propertyName'));
+        var propertyName = event.target.getAttribute('data-propertyName');
+        Query.properties._remove(event.target.getAttribute('data-propertyName'));
         updateQueryString();
     }
     var updateQueryString = function(){
@@ -41,7 +41,7 @@ Components.snapshot = function(){
         Location.query(qs, true);
     }
     var sortOnColumn = function(event){
-        state.sortProperty = event.target.getAttribute('sortProperty');
+        state.sortProperty = event.target.getAttribute('data-sortProperty');
         state.sortDirection = (state.sortDirection == 'asc' ? 'desc' : 'asc');
 
         var isNumber = (DealPropertiesByName[state.sortProperty].type == 'number');
@@ -98,15 +98,15 @@ Components.snapshot = function(){
             ]
         },
         properties: function(){
-            return m('label', [
+            return [
                 m('p', "Select properties:"),
                 m('div.select', [
                     m('table', [
                         DealProperties.map(function(property){
                             return m('tr', [
                                 m('td', {
-                                    isHidden: (DefaultDealProperties.includes(property.name) || Query.properties.includes(property.name)),
-                                    propertyName: property.name,
+                                    'data-isHidden': (DefaultDealProperties.includes(property.name) || Query.properties.includes(property.name)),
+                                    'data-propertyName': property.name,
                                     onclick: addPropertyToQueryString
                                 }, property.label)
                             ])
@@ -120,15 +120,15 @@ Components.snapshot = function(){
                             var isDefaultDealProperty = DefaultDealProperties.includes(propertyName);
                             return m('tr', [
                                 m('td', {
-                                    disabled: isDefaultDealProperty,
-                                    propertyName: propertyName,
+                                    'data-disabled': isDefaultDealProperty,
+                                    'data-propertyName': propertyName,
                                     onclick: (isDefaultDealProperty ? null : removePropertyFromQueryString)
                                 }, DealPropertiesByName[propertyName].label)
                             ])
                         })
                     ])
                 ])
-            ])
+            ]
         },
         dealHeaders: function(){
             return m('tr', [
@@ -139,9 +139,9 @@ Components.snapshot = function(){
                     var property = DealPropertiesByName[propertyName];
                     return m('th', {
                         title: property.name,
-                        propertyType: property.type,
-                        sortProperty: property.name,
-                        sortDirection: (state.sortProperty == property.name ? state.sortDirection : false),
+                        'data-propertyType': property.type,
+                        'data-sortProperty': property.name,
+                        'data-sortDirection': (state.sortProperty == property.name ? state.sortDirection : false),
                         onclick: sortOnColumn
                     }, property.label)
                 })
@@ -166,7 +166,7 @@ Components.snapshot = function(){
             var deal = this;
             var property = DealPropertiesByName[propertyName];
             return m('td', {
-                propertyType: property.type,
+                'data-propertyType': property.type,
             }, deal[property.name]);
         }
     }
@@ -190,8 +190,8 @@ Components.snapshot = function(){
             });
         },
         onupdate: function(){
-            var fixedHeaderSource = document.querySelectorAll('[fixedHeader="source"] thead tr > *');
-            var fixedHeaderDestination = document.querySelectorAll('[fixedHeader="destination"] thead tr > *');
+            var fixedHeaderSource = document.querySelectorAll('[data-fixedHeader="source"] thead tr > *');
+            var fixedHeaderDestination = document.querySelectorAll('[data-fixedHeader="destination"] thead tr > *');
             for(var i = 0; i < fixedHeaderSource.length; i++){
                 fixedHeaderDestination[i].style.width = fixedHeaderSource[i].clientWidth + 'px';
             }
@@ -222,12 +222,12 @@ Components.snapshot = function(){
                         ])
                     ]),
                     m('div.body', [
-                        m('table[fixedHeader="destination"]', [
+                        m('table[data-fixedHeader="destination"]', [
                             m('thead', [
                                 views.dealHeaders()
                             ])
                         ]),
-                        m('table[fixedHeader="source"]', [
+                        m('table[data-fixedHeader="source"]', [
                             m('thead', [
                                 views.dealDummyHeaders()
                             ]),

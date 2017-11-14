@@ -139,24 +139,24 @@ button:hover{
 }
 
 
-[fixedHeader]{
+[data-fixedHeader]{
 	padding:10px;
 }
-[fixedHeader='destination']{
+[data-fixedHeader='destination']{
 	width:100%;
 	z-index:100;
 	position:sticky;
 	top:0;
 	background-color:#fff;
 }
-[fixedHeader='source']{
+[data-fixedHeader='source']{
 	z-index:99;
 	position:relative;
 	top:-27px;
 }
 
-[fixedHeader='source'] thead td,
-[fixedHeader='source'] thead th{
+[data-fixedHeader='source'] thead td,
+[data-fixedHeader='source'] thead th{
 	opacity:0;
 }
 
@@ -177,10 +177,10 @@ td, th{
 	border-bottom:1px solid #eee;
 	padding:2px 4px;
 }
-tr > :not([propertytype=string]){
+tr > :not([data-propertytype=string]){
 	white-space:nowrap;
 }
-tr > [propertytype=string]{
+tr > [data-propertytype=string]{
 	min-width:250px;
 }
 tr > :first-child{
@@ -211,27 +211,27 @@ tr > :last-child{
 	background-color:#f6f6f6;
 }
 
-[isHidden]{
+[data-isHidden]{
 	display:none;
 }
 
-[sortProperty]{
+[data-sortProperty]{
 	cursor:pointer;
 	text-decoration:underline;
 }
-[sortProperty]:hover{
+[data-sortProperty]:hover{
 	color:#00f;
 }
-[sortDirection]{
+[data-sortDirection]{
 	color:#00f;
 }
-[sortDirection='desc']:before{
+[data-sortDirection='desc']:before{
 	content:'\2191';
 }
-[sortDirection='asc']:before{
+[data-sortDirection='asc']:before{
 	content:'\2193';
 }
 
-[propertyType='number']{
+[data-propertyType='number']{
 	text-align:right;
 }
