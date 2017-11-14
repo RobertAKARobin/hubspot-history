@@ -147,6 +147,15 @@ Components.snapshot = function(){
                 })
             ])
         },
+        dealDummyHeaders: function(){
+            return m('tr', [
+                m('th', 'Id'),
+                RequestedDealProperties.map(function(propertyName){
+                    var property = DealPropertiesByName[propertyName];
+                    return m('th', property.label)
+                })
+            ])
+        },
         dealRow: function(deal){
             return m('tr', [
                 m('td', deal.dealId),
@@ -220,7 +229,7 @@ Components.snapshot = function(){
                         ]),
                         m('table[fixedHeader="source"]', [
                             m('thead', [
-                                views.dealHeaders()
+                                views.dealDummyHeaders()
                             ]),
                             m('tbody', [
                                 Deals.map(views.dealRow)
