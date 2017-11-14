@@ -143,6 +143,7 @@ button:hover{
 	padding:10px;
 }
 [fixedHeader='destination']{
+	width:100%;
 	z-index:100;
 	position:sticky;
 	top:0;
@@ -154,17 +155,6 @@ button:hover{
 	top:-27px;
 }
 
-[fixedHeader='destination'] table,
-[fixedHeader='destination'] thead,
-[fixedHeader='destination'] tbody,
-[fixedHeader='destination'] tr{
-	display:block;
-	white-space:nowrap;
-}
-[fixedHeader='destination'] thead td,
-[fixedHeader='destination'] thead th{
-	display:inline-block;
-}
 [fixedHeader='source'] thead td,
 [fixedHeader='source'] thead th{
 	opacity:0;
