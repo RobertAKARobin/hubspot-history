@@ -137,6 +137,9 @@ button:hover{
 	z-index:1;
 	overflow:scroll;
 }
+.dealLoadStatus{
+	padding:10px;
+}
 
 .dealHeaders{
 	width:100%;
@@ -198,11 +201,11 @@ tr > :last-child{
 	border:0;
 	padding:0 10px;
 }
-.select td[disabled]{
+.select td[data-disabled]{
 	color:#999;
 	cursor:default;
 }
-.select td:not([disabled]):hover{
+.select td:not([data-disabled]):hover{
 	background-color:#f6f6f6;
 }
 

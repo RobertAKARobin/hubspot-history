@@ -15,7 +15,8 @@ Components.snapshot = function(){
     }
 
     var state = {
-        isLoaded: false,
+        propertiesLoadingStatus: 0,
+        dealsLoadingStatus: 0,
         sortProperty: false,
         sortDirection: false
     }
@@ -130,6 +131,46 @@ Components.snapshot = function(){
                 ])
             ]
         },
+        sidebar: function(){
+            return m('div.controls', [
+                views.properties(),
+                m('button', {
+                    onclick: function(event){
+                        var qs = JSON.parse(JSON.stringify(Location.query()));
+                        qs.properties = DefaultDealProperties.concat(qs.properties).join(',');
+                        state.dealsLoadingStatus = 1;
+                        Deals = [];
+                        m.request({
+                            method: 'GET',
+                            url: './deals/snapshot',
+                            data: qs
+                        }).then(function(response){
+                            RequestedDealProperties = Object.keys(response.requestedProperties);
+                            Deals = Object.values(response.deals);
+                            Deals.forEach(formatDealProperties);
+                            state.dealsLoadingStatus = 2;
+                        });
+                    }
+                }, 'Load')
+            ])
+        },
+        deals: function(){
+            return [
+                m('table.dealHeaders', [
+                    m('thead', [
+                        views.dealHeaders()
+                    ])
+                ]),
+                m('table.dealRows', [
+                    m('thead', [
+                        views.dealHeaders()
+                    ]),
+                    m('tbody', [
+                        Deals.map(views.dealRow)
+                    ])
+                ])
+            ]
+        },
         dealHeaders: function(){
             return m('tr', [
                 m('th', {
@@ -164,7 +205,7 @@ Components.snapshot = function(){
 
     return {
         oninit: function(){
-            state.isLoaded = false;
+            state.propertiesLoadingStatus = 0;
             m.request({
                 method: 'GET',
                 url: './deals/properties'
@@ -176,7 +217,7 @@ Components.snapshot = function(){
                     DealProperties = Object.values(DealPropertiesByName)._sortOn(function(item){
                         return (item.label || item.name);
                     });
-                    state.isLoaded = true;
+                    state.propertiesLoadingStatus = 2;
                 }
             });
         },
@@ -188,51 +229,27 @@ Components.snapshot = function(){
             }
         },
         view: function(){
-            if(state.isLoaded){
-                return m('div.wrap', [
-                    m('div.sidebar', [
-                        m('div.controls', [
-                            m('h1', 'Hubspot Snapshot'),
-                            views.properties(),
-                            m('button', {
-                                onclick: function(event){
-                                    var qs = JSON.parse(JSON.stringify(Location.query()));
-                                    qs.properties = DefaultDealProperties.concat(qs.properties).join(',');
-                                    Deals = [];
-                                    m.request({
-                                        method: 'GET',
-                                        url: './deals/snapshot',
-                                        data: qs
-                                    }).then(function(response){
-                                        RequestedDealProperties = Object.keys(response.requestedProperties);
-                                        Deals = Object.values(response.deals);
-                                        Deals.forEach(formatDealProperties);
-                                    });
-                                }
-                            }, 'Load')
-                        ])
-                    ]),
-                    m('div.body', [
-                        m('table.dealHeaders', [
-                            m('thead', [
-                                views.dealHeaders()
-                            ])
-                        ]),
-                        m('table.dealRows', [
-                            m('thead', [
-                                views.dealHeaders()
-                            ]),
-                            m('tbody', [
-                                Deals.map(views.dealRow)
-                            ])
-                        ])
-                    ])
+            return m('div.wrap', [
+                m('div.sidebar', [
+                    m('h1', 'Hubspot Snapshot'),
+                    (
+                        state.propertiesLoadingStatus == 2
+                        ? views.sidebar()
+                        : m('p', 'Loading...')
+                    )
+                ]),
+                m('div.body', [
+                    (
+                        state.dealsLoadingStatus == 2
+                        ? views.deals()
+                        : m('div.dealLoadStatus',
+                            state.dealsLoadingStatus == 1
+                            ? m('p', 'Loading...')
+                            : m('p', 'No deals loaded.')
+                        )
+                    )
                 ])
-            }else{
-                return [
-                    m('p', 'Loading Deal properties...')
-                ]
-            }
+            ])
         }
     }
 
