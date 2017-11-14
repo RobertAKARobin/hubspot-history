@@ -136,12 +136,14 @@ button:hover{
 	padding-left:310px;
 	min-width:100vw;
 	min-height:100vh;
+	padding-right:10px;
 }
 
 table{
 	border-spacing:0;
 	border-collapse:collapse;
-	width:100%;
+	min-width:100%;
+	table-layout:fixed;
 }
 th{
 	font-family:'Roboto Slab', serif;
@@ -152,6 +154,12 @@ td, th{
 	vertical-align:top;
 	border-bottom:1px solid #eee;
 	padding:2px 4px;
+}
+tr > :not([propertytype=string]){
+	white-space:nowrap;
+}
+tr > [propertytype=string]{
+	min-width:250px;
 }
 
 .select{
