@@ -180,11 +180,18 @@ Components.snapshot = function(){
                 }
             });
         },
+        onupdate: function(){
+            var fixedHeaderSource = document.querySelectorAll('[fixedHeader="source"] thead tr > *');
+            var fixedHeaderDestination = document.querySelectorAll('[fixedHeader="destination"] thead tr > *');
+            for(var i = 0; i < fixedHeaderSource.length; i++){
+                fixedHeaderDestination[i].style.width = fixedHeaderSource[i].clientWidth + 'px';
+            }
+        },
         view: function(){
             if(state.isLoaded){
                 return m('div.wrap', [
                     m('div.sidebar', [
-                        m('div', [
+                        m('div.controls', [
                             m('h1', 'Hubspot Snapshot'),
                             views.properties(),
                             m('button', {
@@ -206,7 +213,12 @@ Components.snapshot = function(){
                         ])
                     ]),
                     m('div.body', [
-                        m('table', [
+                        m('table[fixedHeader="destination"]', [
+                            m('thead', [
+                                views.dealHeaders()
+                            ])
+                        ]),
+                        m('table[fixedHeader="source"]', [
                             m('thead', [
                                 views.dealHeaders()
                             ]),

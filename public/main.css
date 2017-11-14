@@ -116,28 +116,60 @@ button:hover{
 	background-color:#00f;
 }
 
-.wrap > .sidebar{
-	z-index:2;
-	position:fixed;
-	width:300px;
-	top:0;
-	left:0;
-	padding:10px;
+.wrap{
+	display:flex;
+	flex-direction:row;
 	height:100vh;
-	background-color:#eee;
-	overflow-y:scroll;
-	direction:rtl;
+	width:100vw;
+	overflow:hidden;
 }
-.wrap > .sidebar > *{
-	direction:ltr;
+.wrap > .sidebar{
+	flex-basis:300px;
+	padding:10px;
+	background-color:#eee;
+	flex-grow:0;
+	flex-shrink:0;
+	z-index:2;
+	overflow-y:scroll;
 }
 .wrap > .body{
+	flex-grow:1;
 	z-index:1;
-	padding-left:310px;
-	min-width:100vw;
-	min-height:100vh;
-	padding-right:10px;
+	overflow:scroll;
 }
+
+
+[fixedHeader]{
+	padding:10px;
+}
+[fixedHeader='destination']{
+	z-index:100;
+	position:sticky;
+	top:0;
+	background-color:#fff;
+}
+[fixedHeader='source']{
+	z-index:99;
+	position:relative;
+	top:-27px;
+}
+
+[fixedHeader='destination'] table,
+[fixedHeader='destination'] thead,
+[fixedHeader='destination'] tbody,
+[fixedHeader='destination'] tr{
+	display:block;
+	white-space:nowrap;
+}
+[fixedHeader='destination'] thead td,
+[fixedHeader='destination'] thead th{
+	display:inline-block;
+}
+[fixedHeader='source'] thead td,
+[fixedHeader='source'] thead th{
+	opacity:0;
+}
+
 
 table{
 	border-spacing:0;
@@ -161,6 +193,12 @@ tr > :not([propertytype=string]){
 tr > [propertytype=string]{
 	min-width:250px;
 }
+tr > :first-child{
+	padding-left:10px;
+}
+tr > :last-child{
+	padding-right:10px;
+}
 
 .select{
 	max-height:150px;
@@ -182,9 +220,11 @@ tr > [propertytype=string]{
 .select td:not([disabled]):hover{
 	background-color:#f6f6f6;
 }
+
 [isHidden]{
 	display:none;
 }
+
 [sortProperty]{
 	cursor:pointer;
 	text-decoration:underline;
@@ -201,6 +241,7 @@ tr > [propertytype=string]{
 [sortDirection='asc']:before{
 	content:'\2193';
 }
+
 [propertyType='number']{
 	text-align:right;
 }
