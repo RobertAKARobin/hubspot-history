@@ -190,10 +190,10 @@ Components.snapshot = function(){
             });
         },
         onupdate: function(){
-            var fixedHeaderSource = document.querySelectorAll('[data-fixedHeader="source"] thead tr > *');
-            var fixedHeaderDestination = document.querySelectorAll('[data-fixedHeader="destination"] thead tr > *');
-            for(var i = 0; i < fixedHeaderSource.length; i++){
-                fixedHeaderDestination[i].style.width = fixedHeaderSource[i].clientWidth + 'px';
+            var hiddenDealHeaders = document.querySelectorAll('.dealRows thead th');
+            var dealHeaders = document.querySelectorAll('.dealHeaders thead th');
+            for(var i = 0; i < hiddenDealHeaders.length; i++){
+                dealHeaders[i].style.width = hiddenDealHeaders[i].clientWidth + 'px';
             }
         },
         view: function(){
@@ -222,12 +222,12 @@ Components.snapshot = function(){
                         ])
                     ]),
                     m('div.body', [
-                        m('table[data-fixedHeader="destination"]', [
+                        m('table.dealHeaders', [
                             m('thead', [
                                 views.dealHeaders()
                             ])
                         ]),
-                        m('table[data-fixedHeader="source"]', [
+                        m('table.dealRows', [
                             m('thead', [
                                 views.dealDummyHeaders()
                             ]),

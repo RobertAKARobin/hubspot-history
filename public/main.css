@@ -138,25 +138,20 @@ button:hover{
 	overflow:scroll;
 }
 
-
-[data-fixedHeader]{
-	padding:10px;
-}
-[data-fixedHeader='destination']{
+.dealHeaders{
 	width:100%;
 	z-index:100;
 	position:sticky;
 	top:0;
 	background-color:#fff;
 }
-[data-fixedHeader='source']{
+.dealRows{
 	z-index:99;
 	position:relative;
 	top:-27px;
 }
 
-[data-fixedHeader='source'] thead td,
-[data-fixedHeader='source'] thead th{
+.dealRows thead th{
 	opacity:0;
 }
 
