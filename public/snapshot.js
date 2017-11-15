@@ -161,12 +161,12 @@ Components.snapshot = function(){
         deals: function(){
             return [
                 m('table.dealHeaders', [
-                    m('thead', [
+                    m('thead.dealHeaderColumns', [
                         views.dealHeaders(true)
                     ])
                 ]),
                 m('table.dealRows', [
-                    m('thead', [
+                    m('thead.dealHeaderColumnsDummy', [
                         views.dealHeaders()
                     ]),
                     m('tbody', [
@@ -226,8 +226,8 @@ Components.snapshot = function(){
             });
         },
         onupdate: function(){
-            var hiddenDealHeaders = document.querySelectorAll('.dealRows thead th');
-            var dealHeaders = document.querySelectorAll('.dealHeaders thead th');
+            var hiddenDealHeaders = document.querySelectorAll('.dealHeaderColumnsDummy th');
+            var dealHeaders = document.querySelectorAll('.dealHeaderColumns th');
             for(var i = 0; i < hiddenDealHeaders.length; i++){
                 dealHeaders[i].style.width = hiddenDealHeaders[i].clientWidth + 'px';
             }
