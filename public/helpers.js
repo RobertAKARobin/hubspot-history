@@ -23,11 +23,11 @@ Array.prototype._sortOn = function(sortProperty){
 		return item[sortProperty];
 	});
 	return array.sort(function(itemA, itemB){
-		var valA = (sortFunction(itemA) || 0);
-		var valB = (sortFunction(itemB) || 0);
-		if(valA > valB){
+		var valA = sortFunction(itemA);
+		var valB = sortFunction(itemB);
+		if(valA === null || valA === undefined || valA > valB){
 			return 1
-		}else if(valA < valB){
+		}else if(valB === null || valB === undefined || valA < valB){
 			return -1
 		}else{
 			return 0;

@@ -47,10 +47,11 @@ Components.snapshot = function(){
 
         var isNumber = (DealPropertiesByName[state.sortProperty].type == 'number');
         Deals._sortOn(function(deal){
+            var value = deal[state.sortProperty];
             if(isNumber){
-                return parseFloat(deal[state.sortProperty]);
-            }else{
-                return deal[state.sortProperty].toString().toLowerCase().replace(/[^a-zA-Z0-9]/g,'');
+                return parseFloat(value || 0);
+            }else if(value){
+                return (value || '').toString().toLowerCase().replace(/[^a-zA-Z0-9]/g,'');
             }
         });
         if(state.sortDirection == 'asc'){
