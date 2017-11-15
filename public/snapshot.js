@@ -158,7 +158,7 @@ Components.snapshot = function(){
             return [
                 m('table.dealHeaders', [
                     m('thead', [
-                        views.dealHeaders()
+                        views.dealHeaders(true)
                     ])
                 ]),
                 m('table.dealRows', [
@@ -171,7 +171,7 @@ Components.snapshot = function(){
                 ])
             ]
         },
-        dealHeaders: function(){
+        dealHeaders: function(isClickable){
             return m('tr', [
                 m('th', {
                     title: 'dealId'
@@ -181,9 +181,9 @@ Components.snapshot = function(){
                     return m('th', {
                         title: property.name,
                         'data-propertyType': property.type,
-                        'data-sortProperty': property.name,
+                        'data-sortProperty': (isClickable ? property.name : false),
                         'data-sortDirection': (state.sortProperty == property.name ? state.sortDirection : false),
-                        onclick: sortOnColumn
+                        onclick: (isClickable ? sortOnColumn : false)
                     }, property.label)
                 })
             ])

@@ -146,16 +146,15 @@ button:hover{
 	z-index:100;
 	position:sticky;
 	top:0;
-	background-color:#fff;
+	background-color:#eee;
 }
 .dealRows{
 	z-index:99;
 	position:relative;
-	top:-27px;
 }
-
 .dealRows thead th{
 	opacity:0;
+	border-bottom:0;
 }
 
 
