@@ -229,6 +229,10 @@ tr > :last-child{
 	content:'\2193';
 }
 
-[data-propertyType='number']{
+[data-propertyType='number'],
+[data-propertyType='currency']{
 	text-align:right;
+}
+[data-propertyType='currency']:before{
+	content:'$';
 }

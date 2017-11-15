@@ -24,12 +24,14 @@ module.exports = {
 			var output = {};
 			for(pIndex = 0; pIndex < properties.length; pIndex++){
 				property = properties[pIndex];
-				output[property.name] = {
-					name: property.name,
-					label: property.label,
-					type: property.type,
-					fieldType: property.fieldType
-				};
+				if(!property.isDeleted){
+					output[property.name] = {
+						name: property.name,
+						label: property.label,
+						type: (property.showCurrencySymbol ? 'currency' : property.type),
+						fieldType: property.fieldType
+					};
+				}
 			}
 			res.properties = output;
 			next();

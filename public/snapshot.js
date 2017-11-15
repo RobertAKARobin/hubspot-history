@@ -45,10 +45,10 @@ Components.snapshot = function(){
         state.sortProperty = event.target.getAttribute('data-sortProperty');
         state.sortDirection = (state.sortDirection == 'asc' ? 'desc' : 'asc');
 
-        var isNumber = (DealPropertiesByName[state.sortProperty].type == 'number');
+        var fieldType = DealPropertiesByName[state.sortProperty].type;
         Deals._sortOn(function(deal){
             var value = deal[state.sortProperty];
-            if(isNumber){
+            if(fieldType == 'number' || fieldType == 'currency'){
                 return parseFloat(value || 0);
             }else if(value){
                 return (value || '').toString().toLowerCase().replace(/[^a-zA-Z0-9]/g,'');
@@ -67,6 +67,9 @@ Components.snapshot = function(){
         switch(DealPropertiesByName[propertyName].type){
             case 'datetime':
                 value = (new Date(parseInt(value)))._toPrettyString();
+                break;
+            case 'currency':
+                value = (parseFloat(value) || 0).toFixed(2);
                 break;
             case 'number':
                 value = (parseFloat(value) || 0);
