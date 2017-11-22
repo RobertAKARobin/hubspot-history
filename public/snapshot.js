@@ -3,6 +3,7 @@
 Components.snapshot = function(){
 
     var Deals = [];
+    var FilteredDeals = [];
     var DealProperties = [];
     var DealPropertiesByName = {};
     var DefaultDealProperties = ['dealname', 'createdate', 'dealstage'];
@@ -40,6 +41,15 @@ Components.snapshot = function(){
         }
         qs.properties = Query.properties.join(',');
         Location.query(qs, true);
+    }
+    var applyFilter = function(filterString){
+        FilteredDeals = Deals.filter(function(deal){
+            try{
+                return eval(filterString);
+            }catch(e){
+                return false;
+            }
+        });
     }
     var sortOnColumn = function(event){
         state.sortProperty = event.target.getAttribute('data-sortProperty');
@@ -163,6 +173,7 @@ Components.snapshot = function(){
                             RequestedDealProperties = Object.keys(response.requestedProperties);
                             Deals = Object.values(response.deals);
                             Deals.forEach(formatDealProperties);
+                            FilteredDeals = Deals;
                             state.dealsLoadingStatus = 2;
                         });
                     }
@@ -174,6 +185,23 @@ Components.snapshot = function(){
                 m('table.dealHeaders', [
                     m('thead.dealHeaderColumns', [
                         views.dealHeaders(true)
+                    ]),
+                    m('tbody', [
+                        m('tr', [
+                            m('td', {
+                                colspan: (RequestedDealProperties.length + 1)
+                            }, [
+                                m('input', {
+                                    onkeyup: function(event){
+                                        var isReturn = (event.keyCode == 13);
+                                        if(isReturn){
+                                            event.preventDefault();
+                                            applyFilter(event.target.value);
+                                        }
+                                    }
+                                })
+                            ])
+                        ])
                     ])
                 ]),
                 m('table.dealRows', [
@@ -181,7 +209,7 @@ Components.snapshot = function(){
                         views.dealHeaders()
                     ]),
                     m('tbody', [
-                        Deals.map(views.dealRow)
+                        FilteredDeals.map(views.dealRow)
                     ])
                 ])
             ]

@@ -65,6 +65,7 @@ select{
 }
 input, select{
 	display:block;
+	width:100%;
 	background-color:#fff;
 }
 input{
@@ -146,6 +147,9 @@ button:hover{
 	z-index:100;
 	position:sticky;
 	top:0;
+	background-color:#fff;
+}
+.dealHeaders thead{
 	background-color:#eee;
 }
 .dealRows{
@@ -155,6 +159,11 @@ button:hover{
 .dealRows thead th{
 	visibility:hidden;
 	border-bottom:0;
+}
+
+
+.dealHeaders td{
+	padding:0 !important;
 }
 
 
