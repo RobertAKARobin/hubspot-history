@@ -207,6 +207,15 @@ tr > :last-child{
 .select td:not([data-disabled]):hover{
 	background-color:#f6f6f6;
 }
+.select .paren{
+	color:#ddd;
+}
+.select .paren:before{
+	content:' (';
+}
+.select .paren:after{
+	content:')';
+}
 
 [data-isHidden]{
 	display:none;

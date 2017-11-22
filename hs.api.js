@@ -27,7 +27,7 @@ module.exports = {
 				if(!property.isDeleted){
 					output[property.name] = {
 						name: property.name,
-						label: property.label,
+						label: (property.label || property.name),
 						type: (property.showCurrencySymbol ? 'currency' : property.type),
 						fieldType: property.fieldType
 					};

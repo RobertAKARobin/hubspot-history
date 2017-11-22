@@ -112,8 +112,12 @@ Components.snapshot = function(){
                                 m('td', {
                                     'data-isHidden': (DefaultDealProperties.includes(property.name) || Query.properties.includes(property.name)),
                                     'data-propertyName': property.name,
-                                    onclick: addPropertyToQueryString
-                                }, property.label)
+                                    onclick: addPropertyToQueryString,
+                                    title: property.name
+                                }, [
+                                    property.label,
+                                    m('span.paren', property.name)
+                                ])
                             ])
                         })
                     ])
@@ -123,13 +127,20 @@ Components.snapshot = function(){
                     m('table', [
                         DefaultDealProperties.concat(Query.properties).map(function(propertyName){
                             var isDefaultDealProperty = DefaultDealProperties.includes(propertyName);
-                            return m('tr', [
-                                m('td', {
-                                    'data-disabled': isDefaultDealProperty,
-                                    'data-propertyName': propertyName,
-                                    onclick: (isDefaultDealProperty ? null : removePropertyFromQueryString)
-                                }, DealPropertiesByName[propertyName].label)
-                            ])
+                            var property = DealPropertiesByName[propertyName];
+                            if(property){
+                                return m('tr', [
+                                    m('td', {
+                                        'data-disabled': isDefaultDealProperty,
+                                        'data-propertyName': propertyName,
+                                        title: property.name,
+                                        onclick: (isDefaultDealProperty ? null : removePropertyFromQueryString)
+                                    }, [
+                                        property.label,
+                                        m('span.paren', property.name)
+                                    ])
+                                ])
+                            }
                         })
                     ])
                 ])
