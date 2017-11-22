@@ -43,6 +43,10 @@ Components.snapshot = function(){
         Location.query(qs, true);
     }
     var applyFilter = function(filterString){
+        filterString = filterString
+            .replace(/=+/g, function(match){
+                return (match.length == 1 ? '==' : match);
+            });
         FilteredDeals = Deals.filter(function(deal){
             try{
                 return eval(filterString);
