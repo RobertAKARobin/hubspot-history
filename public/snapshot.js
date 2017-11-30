@@ -47,14 +47,12 @@ Components.snapshot = function(){
             .replace(/=+/g, function(match){
                 return (match.length == 1 ? '==' : match);
             });
-        filterString = (filterString || 'true');
-        FilteredDeals = Deals.filter(function(deal){
-            try{
-                return eval(filterString);
-            }catch(e){
-                return false;
-            }
-        });
+        try{
+            var filterFunction  = new Function('deal', 'return ' + (filterString || 'true'));
+            FilteredDeals = Deals.filter(filterFunction);
+        }catch(e){
+            return false;
+        }
     }
     var sortOnColumn = function(event){
         state.sortProperty = event.target.getAttribute('data-sortProperty');
