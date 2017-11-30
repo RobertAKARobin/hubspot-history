@@ -19,7 +19,8 @@ Components.snapshot = function(){
         propertiesLoadingStatus: 0,
         dealsLoadingStatus: 0,
         sortProperty: false,
-        sortDirection: false
+        sortDirection: false,
+        filterError: false
     }
 
     var addPropertyToQueryString = function(event){
@@ -61,6 +62,7 @@ Components.snapshot = function(){
             var filterFunction  = new Function('deal', 'return ' + (filterString || 'true'));
             FilteredDeals = Deals.filter(filterFunction);
         }catch(e){
+            state.filterError = true;
             return false;
         }
     }
@@ -205,6 +207,10 @@ Components.snapshot = function(){
                                 colspan: (RequestedDealProperties.length + 1)
                             }, [
                                 m('input', {
+                                    hasError: !!(state.filterError),
+                                    oninput: function(){
+                                        state.filterError = false;
+                                    },
                                     onkeyup: function(event){
                                         var isReturn = (event.keyCode == 13);
                                         if(isReturn){

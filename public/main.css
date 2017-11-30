@@ -103,6 +103,10 @@ input[type=checkbox]:checked+span:after{
 input[type=checkbox]:not(:checked)+span:after{
 	color:#ccc;
 }
+input[hasError]{
+	background-color:#fee;
+	color:#900;
+}
 button{
 	display:block;
 	width:100%;
