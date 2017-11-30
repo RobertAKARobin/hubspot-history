@@ -13,6 +13,16 @@ var HS = hsAPIWrapper({
 
 module.exports = {
 	auth: HS.auth,
+	getUserInfo: [
+		HS.api({
+			method: 'GET',
+			url: 'integrations/v1/me'
+		}),
+		function(req, res, next){
+			res.hubspotPortalID = res.apiResponse.body.portalId;
+			next();
+		}
+	],
 	getProperties: [
 		HS.api({
 			method: 'GET',

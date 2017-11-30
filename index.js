@@ -47,6 +47,7 @@ httpServer
 		}
 	)
 	.get('/deals/snapshot',
+		HS.getUserInfo,
 		HS.getProperties,
 		HS.getStages,
 		function(req, res, next){
@@ -79,6 +80,7 @@ httpServer
 				deal.dealstage = res.stages[deal.dealstage];
 			});
 			res.json({
+				hubspotPortalID: res.hubspotPortalID,
 				requestedProperties: req.properties,
 				deals: res.deals
 			});

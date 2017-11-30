@@ -8,6 +8,7 @@ Components.snapshot = function(){
     var DealPropertiesByName = {};
     var DefaultDealProperties = ['dealname', 'createdate', 'dealstage'];
     var RequestedDealProperties = [];
+    var HubspotPortalID = null;
 
     var Query = {
         properties: (Location.query().properties ? Location.query().properties.split(',') : []),
@@ -185,6 +186,7 @@ Components.snapshot = function(){
                             url: './deals/snapshot',
                             data: qs
                         }).then(function(response){
+                            HubspotPortalID = response.hubspotPortalID;
                             RequestedDealProperties = Object.keys(response.requestedProperties);
                             Deals = Object.values(response.deals);
                             Deals.forEach(formatDealProperties);
@@ -204,7 +206,7 @@ Components.snapshot = function(){
                     m('tbody', [
                         m('tr', [
                             m('td', {
-                                colspan: (RequestedDealProperties.length + 2)
+                                colspan: (RequestedDealProperties.length + 1)
                             }, [
                                 m('input', {
                                     hasError: !!(state.filterError),
@@ -235,10 +237,9 @@ Components.snapshot = function(){
         },
         dealHeaders: function(isClickable){
             return m('tr', [
-                m('th'),
                 m('th', {
                     title: 'dealId'
-                }, 'Id'),
+                }),
                 RequestedDealProperties.map(function(propertyName){
                     var property = DealPropertiesByName[propertyName];
                     return m('th', {
@@ -253,8 +254,12 @@ Components.snapshot = function(){
         },
         dealRow: function(deal, dealIndex){
             return m('tr', [
-                m('td', FilteredDeals.length - dealIndex),
-                m('td', deal.dealId),
+                m('td', [
+                    m('a', {
+                        title: 'dealId',
+                        href: 'https://app.hubspot.com/sales/' + HubspotPortalID + '/deal/' + deal.dealId
+                    }, FilteredDeals.length - dealIndex)
+                ]),
                 RequestedDealProperties.map(views.dealColumn.bind(deal))
             ])
         },
