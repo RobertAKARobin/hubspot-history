@@ -204,7 +204,7 @@ Components.snapshot = function(){
                     m('tbody', [
                         m('tr', [
                             m('td', {
-                                colspan: (RequestedDealProperties.length + 1)
+                                colspan: (RequestedDealProperties.length + 2)
                             }, [
                                 m('input', {
                                     hasError: !!(state.filterError),
@@ -235,6 +235,7 @@ Components.snapshot = function(){
         },
         dealHeaders: function(isClickable){
             return m('tr', [
+                m('th'),
                 m('th', {
                     title: 'dealId'
                 }, 'Id'),
@@ -250,8 +251,9 @@ Components.snapshot = function(){
                 })
             ])
         },
-        dealRow: function(deal){
+        dealRow: function(deal, dealIndex){
             return m('tr', [
+                m('td', FilteredDeals.length - dealIndex),
                 m('td', deal.dealId),
                 RequestedDealProperties.map(views.dealColumn.bind(deal))
             ])
