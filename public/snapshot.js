@@ -43,9 +43,19 @@ Components.snapshot = function(){
         Location.query(qs, true);
     }
     var applyFilter = function(filterString){
+        var quotes = [];
         filterString = filterString
-            .replace(/=+/g, function(match){
-                return (match.length == 1 ? '==' : match);
+            .replace(/(".*?[^\\]"|'.*?[^\\]')/g, function(match){
+                quotes.push(match);
+                return '%%%%';
+            })
+            .replace(/\$/g, 'deal.')
+            .replace(/alert\(.*?\)|confirm\(.*?\)|prompt\(.*?\)/g, '')
+            .replace(/([^<>])(=+)/g, function(nil, modifier, equalses){
+                return modifier + (equalses.length == 1 ? '==' : equalses);
+            })
+            .replace(/%%%%/g, function(){
+                return quotes.shift();
             });
         try{
             var filterFunction  = new Function('deal', 'return ' + (filterString || 'true'));
