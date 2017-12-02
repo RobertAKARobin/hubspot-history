@@ -25,13 +25,13 @@ Components.snapshot = function(){
 	}
 
 	var addPropertyToQueryString = function(event){
-		var propertyName = event.target.getAttribute('data-propertyName');
-		Query.properties._addIfDoesNotInclude(propertyName);
+		var property = this;
+		Query.properties._addIfDoesNotInclude(property.name);
 		updateQueryString();
 	}
 	var removePropertyFromQueryString = function(event){
-		var propertyName = event.target.getAttribute('data-propertyName');
-		Query.properties._remove(event.target.getAttribute('data-propertyName'));
+		var property = this;
+		Query.properties._remove(property.name);
 		updateQueryString();
 	}
 	var updateQueryString = function(){
@@ -68,7 +68,8 @@ Components.snapshot = function(){
 		}
 	}
 	var sortOnColumn = function(event){
-		state.sortProperty = event.target.getAttribute('data-sortProperty');
+		var property = this;
+		state.sortProperty = property.name;
 		state.sortDirection = (state.sortDirection == 'asc' ? 'desc' : 'asc');
 
 		var fieldType = DealPropertiesByName[state.sortProperty].type;
@@ -137,8 +138,7 @@ Components.snapshot = function(){
 							return m('tr', [
 								m('td', {
 									'data-isHidden': (DefaultDealProperties.includes(property.name) || Query.properties.includes(property.name)),
-									'data-propertyName': property.name,
-									onclick: addPropertyToQueryString,
+									onclick: addPropertyToQueryString.bind(property),
 									title: property.name
 								}, [
 									property.label,
@@ -158,9 +158,8 @@ Components.snapshot = function(){
 								return m('tr', [
 									m('td', {
 										'data-disabled': isDefaultDealProperty,
-										'data-propertyName': propertyName,
 										title: property.name,
-										onclick: (isDefaultDealProperty ? null : removePropertyFromQueryString)
+										onclick: (isDefaultDealProperty ? null : removePropertyFromQueryString.bind(property))
 									}, [
 										property.label,
 										m('span.paren', property.name)
@@ -247,7 +246,7 @@ Components.snapshot = function(){
 						'data-propertyType': property.type,
 						'data-sortProperty': (isClickable ? property.name : false),
 						'data-sortDirection': (state.sortProperty == property.name ? state.sortDirection : false),
-						onclick: (isClickable ? sortOnColumn : false)
+						onclick: (isClickable ? sortOnColumn.bind(property) : false)
 					}, property.label)
 				})
 			])
