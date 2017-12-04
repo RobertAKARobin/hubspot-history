@@ -55,10 +55,11 @@ Components.snapshot = function(){
 			.replace(/alert\(.*?\)|confirm\(.*?\)|prompt\(.*?\)/g, '')
 			.replace(/\bAND\b/gi, '&&')
 			.replace(/\bOR\b/gi, '||')
-			.replace(/\bNOT\s*/gi, '!')
+			.replace(/\bNOT\s+/gi, '!')
 			.replace(/≠/g, '!=')
 			.replace(/≥/g, '>=')
 			.replace(/≤/g, '<=')
+			.replace(/\s+HAS\s+(%%%%)/gi, '.indexOf(%%%%) > -1')
 			.replace(/([^<>])(=+)/g, function(nil, modifier, equalses){
 				return modifier + (equalses.length == 1 ? '==' : equalses);
 			})
