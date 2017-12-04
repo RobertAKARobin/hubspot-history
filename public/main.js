@@ -18,7 +18,8 @@ var HubspotPortalID = null;
 var Query = {
 	properties: (Location.query().properties ? Location.query().properties.split(',') : []),
 	limitToFirst: (Location.query().limitToFirst || false),
-	includeHistory: (Location.query().includeHistory || false)
+	includeHistory: (Location.query().includeHistory || false),
+	filter: (Location.query().filter || null)
 }
 
 var state = {
@@ -26,7 +27,8 @@ var state = {
 	dealsLoadingStatus: 0,
 	sortProperty: false,
 	sortDirection: false,
-	filterError: false
+	filterError: false,
+	enteredFilter: Query.filter
 }
 
 var addPropertyToQueryString = function(event){
@@ -65,7 +67,7 @@ var API = {
 			Deals.propertiesRequested = response.requestedProperties;
 			Deals.all = Object.values(response.deals);
 			Deals.all.forEach(Deals.formatProperties);
-			Deals.filter('');
+			Deals.filter(Query.filter);
 			state.dealsLoadingStatus = 2;
 		});
 	},

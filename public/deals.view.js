@@ -8,17 +8,20 @@ var DealsView = function(){
 					colspan: Object.keys(Deals.propertiesRequested).length + 1
 				}, [
 					m('input', {
+						value: state.enteredFilter,
 						placeholder: 'Enter filter',
 						hasError: !!(state.filterError),
-						oninput: function(){
-							state.filterError = false;
-						},
 						onkeyup: function(event){
 							var isReturn = (event.keyCode == 13);
+							var filterString = event.target.value;
+							state.filterError = false;
+							state.enteredFilter = filterString;
 							if(isReturn){
 								event.preventDefault();
 								try{
-									Deals.filter(event.target.value);
+									Deals.filter(filterString);
+									Query.filter = filterString;
+									updateQueryString();
 								}catch(e){
 									state.filterError = true;
 								}
