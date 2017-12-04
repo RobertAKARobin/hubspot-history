@@ -7,27 +7,33 @@ var DealsView = function(){
 				m('td', {
 					colspan: Object.keys(Deals.propertiesRequested).length + 1
 				}, [
-					m('input', {
-						value: state.enteredFilter,
-						placeholder: 'Enter filter',
-						hasError: !!(state.filterError),
-						onkeyup: function(event){
-							var isReturn = (event.keyCode == 13);
-							var filterString = event.target.value;
-							state.filterError = false;
-							state.enteredFilter = filterString;
-							if(isReturn){
-								event.preventDefault();
-								try{
-									Deals.filter(filterString);
-									Query.filter = filterString;
-									updateQueryString();
-								}catch(e){
-									state.filterError = true;
+					m('div.tableOptions', [
+						m('label', {
+							for: 'filter'
+						}, 'Showing ' + Deals.allFiltered.length + ' of ' + Deals.all.length + '. Filter on:'),
+						m('input', {
+							id: 'filter',
+							value: state.enteredFilter,
+							placeholder: 'Enter filter',
+							hasError: !!(state.filterError),
+							onkeyup: function(event){
+								var isReturn = (event.keyCode == 13);
+								var filterString = event.target.value;
+								state.filterError = false;
+								state.enteredFilter = filterString;
+								if(isReturn){
+									event.preventDefault();
+									try{
+										Deals.filter(filterString);
+										Query.filter = filterString;
+										updateQueryString();
+									}catch(e){
+										state.filterError = true;
+									}
 								}
 							}
-						}
-					})
+						})
+					])
 				])
 			])
 		},
@@ -69,12 +75,12 @@ var DealsView = function(){
 			])
 		},
 		dataRow: function(deal, dealIndex){
-			return m('tr', [
+			return m('tr.dataRow', [
 				m('td', [
-					m('a', {
+					m('a.idlink', {
 						title: 'dealId',
 						href: 'https://app.hubspot.com/sales/' + HubspotPortalID + '/deal/' + deal.dealId
-					}, Deals.allFiltered.length - dealIndex)
+					}, dealIndex + 1)
 				]),
 				Object.values(Deals.propertiesRequested).map(views.dataColumn.bind(deal))
 			])

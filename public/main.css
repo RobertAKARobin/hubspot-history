@@ -62,49 +62,16 @@ select{
 	padding:0 10px;
 	resize:vertical;
 }
-input, select{
+select{
 	display:block;
 	width:100%;
 	background-color:#fff;
 }
 input{
-	padding:5px 10px;
-}
-input[type=checkbox]{
-	position:absolute;
-	top:0;
-	left:0;
-	opacity:0.01;
-	width:1px;
-	height:1px;
-	overflow:hidden;
-}
-input[type=checkbox]+span{
-	display:block;
-	text-align:center;
-	background-color:#fff;
-	height:22px;
-	width:22px;
-	border:1px solid #ccc;
-}
-input[type=checkbox]+span:after{
-	content:'\2713';
-}
-input[type=checkbox]:checked+span{
-	border-width:2px 0 0 2px;
-}
-input[type=checkbox]:not(:checked)+span{
-	border-width:0 2px 2px 0;
-}
-input[type=checkbox]:checked+span:after{
-	color:#000;
-}
-input[type=checkbox]:not(:checked)+span:after{
-	color:#ccc;
-}
-input[hasError]{
-	background-color:#fee;
-	color:#f00;
+	display:inline-block;
+	width:100%;
+	border-bottom:1px solid #dfe3eb;
+	padding:0 5px;
 }
 button{
 	display:block;
@@ -151,18 +118,22 @@ button:hover{
 table.dealRows, table.dealHeaders{
 	border:0;
 }
-table.dealHeaders{
+.dealHeaders{
 	width:100%;
 	z-index:100;
 	position:sticky;
 	top:0;
-	background-color:#F5F8FA;
 	vertical-align:middle;
+	box-shadow:0 0 30px 0 rgba(0,0,0,0.4);
+	background-color:#fff;
+}
+.dealHeaders th{
+	background-color:#F5F8FA;
 }
 .dealHeaders input{
-	background-color:transparent;
 	height:22px;
-	padding:0;
+	padding-top:0;
+	padding-bottom:0;
 }
 .dealRows{
 	z-index:99;
@@ -195,7 +166,7 @@ td{
 th{
 	line-height:16px;
 }
-tr:hover{
+tr.dataRow:hover{
 	background-color:#F5F8FA;	
 }
 tr > :not([data-propertytype=string]){
@@ -283,4 +254,19 @@ td[data-propertyType='currency']:before{
 
 th .sum{
 	display:block;
+}
+.idlink{
+	display:block;
+}
+.tableOptions{
+	display:flex;
+	width:100%;
+	flex-direction:row;
+}
+.tableOptions label{
+	margin-bottom:0;
+	margin-right:10px;
+}
+.tableOptions > *{
+	/* outline:1px solid blue; */
 }
