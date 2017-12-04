@@ -60,7 +60,7 @@ var Deals = (function(){
 		Deals.calculations = {};
 		Object.values(Deals.propertiesRequested).forEach(function(property){
 			if(property.type == 'number' || property.type == 'currency'){
-				Deals.calculations[propertyName] = Deals.allFiltered.reduce(Deals.sumBy(property), 0);
+				Deals.calculations[property.name] = Deals.allFiltered.reduce(Deals.sumBy(property), 0);
 			}
 		});
 	}
