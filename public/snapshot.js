@@ -53,12 +53,19 @@ Components.snapshot = function(){
 			})
 			.replace(/\$/g, 'deal.')
 			.replace(/alert\(.*?\)|confirm\(.*?\)|prompt\(.*?\)/g, '')
+			.replace(/\bAND\b/gi, '&&')
+			.replace(/\bOR\b/gi, '||')
+			.replace(/\bNOT\s*/gi, '!')
+			.replace(/≠/g, '!=')
+			.replace(/≥/g, '>=')
+			.replace(/≤/g, '<=')
 			.replace(/([^<>])(=+)/g, function(nil, modifier, equalses){
 				return modifier + (equalses.length == 1 ? '==' : equalses);
 			})
 			.replace(/%%%%/g, function(){
 				return quotes.shift();
 			});
+		console.log(filterString)
 		try{
 			var filterFunction  = new Function('deal', 'return ' + (filterString || 'true'));
 			DealsFiltered = Deals.filter(filterFunction);
