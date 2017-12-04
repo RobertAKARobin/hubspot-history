@@ -6,6 +6,7 @@ Components.snapshot = function(){
 	var DealsFiltered = [];
 	var DealProperties = [];
 	var DealPropertiesByName = {};
+	var DealCalculations = {};
 	var DefaultDealProperties = ['dealname', 'createdate', 'dealstage'];
 	var RequestedDealProperties = [];
 	var HubspotPortalID = null;
@@ -46,6 +47,7 @@ Components.snapshot = function(){
 	}
 	var applyFilter = function(filterString){
 		var quotes = [];
+		filterString = (filterString || '');
 		filterString = filterString
 			.replace(/(".*?[^\\]"|'.*?[^\\]')/g, function(match){
 				quotes.push(match);
@@ -70,6 +72,13 @@ Components.snapshot = function(){
 		try{
 			var filterFunction  = new Function('deal', 'return ' + (filterString || 'true'));
 			DealsFiltered = Deals.filter(filterFunction);
+			DealCalculations = {};
+			RequestedDealProperties.forEach(function(propertyName){
+				var property = DealPropertiesByName[propertyName];
+				if(property.type == 'number' || property.type == 'currency'){
+					DealCalculations[propertyName] = DealsFiltered.reduce(sumDealsBy(property.name), 0);
+				}
+			});
 		}catch(e){
 			state.filterError = true;
 			return false;
@@ -111,6 +120,11 @@ Components.snapshot = function(){
 				break;
 		}
 		deal[propertyName] = value;
+	}
+	var sumDealsBy = function(propertyName){
+		return function(sum, deal){
+			return sum + parseFloat(deal[propertyName]);
+		}
 	}
 
 	var views = {
@@ -197,7 +211,7 @@ Components.snapshot = function(){
 							RequestedDealProperties = Object.keys(response.requestedProperties);
 							Deals = Object.values(response.deals);
 							Deals.forEach(formatDealProperties);
-							DealsFiltered = Deals;
+							applyFilter();
 							state.dealsLoadingStatus = 2;
 						});
 					}
@@ -208,9 +222,8 @@ Components.snapshot = function(){
 			return [
 				m('table.dealHeaders', [
 					m('thead.dealHeaderColumns', [
-						views.dealHeaders(true)
-					]),
-					m('tbody', [
+						views.dealHeaders(true),
+						(Object.keys(DealCalculations).length > 0 ? views.dealCalculations() : null),
 						m('tr', [
 							m('td', {
 								colspan: (RequestedDealProperties.length + 1)
@@ -258,6 +271,23 @@ Components.snapshot = function(){
 						'data-sortDirection': (state.sortProperty == property.name ? state.sortDirection : false),
 						onclick: (isClickable ? sortOnColumn.bind(property) : false)
 					}, property.label)
+				})
+			])
+		},
+		dealCalculations: function(){
+			return m('tr.subheader', [
+				m('td'),
+				RequestedDealProperties.map(function(propertyName){
+					var property = DealPropertiesByName[propertyName];
+					var value = DealCalculations[property.name];
+					if(value){
+						if(property.type == 'currency'){
+							value = value.toFixed(2);
+						}
+					}
+					return m('td', {
+						'data-propertyType': property.type
+					}, value);
 				})
 			])
 		},

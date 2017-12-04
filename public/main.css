@@ -188,7 +188,20 @@ td, th{
 	border-width:1px 0;
 	padding:9px 10px;
 }
-tr:hover{
+tr.subheader{
+	background-color:#888;
+	color:#fff;
+}
+tr.subheader td,
+tr.subheader th{
+	height:20px;
+	line-height:18px;
+	padding-top:0;
+	padding-bottom:0;
+	border:0;
+	overflow:hidden;
+}
+tr:not(.subheader):hover{
 	background-color:#F5F8FA;	
 }
 tr > :not([data-propertytype=string]){
