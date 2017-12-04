@@ -3,7 +3,7 @@
 Components.snapshot = function(){
 
 	var Deals = [];
-	var FilteredDeals = [];
+	var DealsFiltered = [];
 	var DealProperties = [];
 	var DealPropertiesByName = {};
 	var DefaultDealProperties = ['dealname', 'createdate', 'dealstage'];
@@ -61,7 +61,7 @@ Components.snapshot = function(){
 			});
 		try{
 			var filterFunction  = new Function('deal', 'return ' + (filterString || 'true'));
-			FilteredDeals = Deals.filter(filterFunction);
+			DealsFiltered = Deals.filter(filterFunction);
 		}catch(e){
 			state.filterError = true;
 			return false;
@@ -73,7 +73,7 @@ Components.snapshot = function(){
 		state.sortDirection = (state.sortDirection == 'asc' ? 'desc' : 'asc');
 
 		var fieldType = DealPropertiesByName[state.sortProperty].type;
-		Deals._sortOn(function(deal){
+		DealsFiltered._sortOn(function(deal){
 			var value = deal[state.sortProperty];
 			if(fieldType == 'number' || fieldType == 'currency'){
 				return parseFloat(value || 0);
@@ -82,7 +82,7 @@ Components.snapshot = function(){
 			}
 		});
 		if(state.sortDirection == 'asc'){
-			Deals.reverse();
+			DealsFiltered.reverse();
 		}
 	}
 	var formatDealProperties = function(deal){
@@ -189,7 +189,7 @@ Components.snapshot = function(){
 							RequestedDealProperties = Object.keys(response.requestedProperties);
 							Deals = Object.values(response.deals);
 							Deals.forEach(formatDealProperties);
-							FilteredDeals = Deals;
+							DealsFiltered = Deals;
 							state.dealsLoadingStatus = 2;
 						});
 					}
@@ -229,7 +229,7 @@ Components.snapshot = function(){
 						views.dealHeaders()
 					]),
 					m('tbody', [
-						FilteredDeals.map(views.dealRow)
+						DealsFiltered.map(views.dealRow)
 					])
 				])
 			]
@@ -257,7 +257,7 @@ Components.snapshot = function(){
 					m('a', {
 						title: 'dealId',
 						href: 'https://app.hubspot.com/sales/' + HubspotPortalID + '/deal/' + deal.dealId
-					}, FilteredDeals.length - dealIndex)
+					}, DealsFiltered.length - dealIndex)
 				]),
 				RequestedDealProperties.map(views.dealColumn.bind(deal))
 			])
