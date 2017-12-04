@@ -48,23 +48,20 @@ var DealsView = function(){
 								Deals.allFiltered.reverse();
 							}
 						 } : false)
-					}, property.label)
-				})
-			])
-		},
-		headerCalculationsRow: function(){
-			return m('tr.subheader', [
-				m('td'),
-				Object.values(Deals.propertiesRequested).map(function(property){
-					var value = Deals.calculations[property.name];
-					if(value){
-						if(property.type == 'currency'){
-							value = value.toFixed(2);
-						}
-					}
-					return m('td', {
-						'data-propertyType': property.type
-					}, value);
+					}, [
+						m('span.title', property.label),
+						(
+							property.type == 'number' || property.type == 'currency'
+							? m('span.sum',
+								(
+									property.type == 'currency'
+									? '$' + Deals.calculations[property.name].toFixed(2)
+									: Deals.calculations[property.name].toString()
+								)
+							)
+							: null
+						)
+					])
 				})
 			])
 		},
@@ -91,7 +88,6 @@ var DealsView = function(){
 		m('table.dealHeaders', [
 			m('thead.dealHeaderColumns', [
 				views.headerTitlesRow(true),
-				(Object.keys(Deals.calculations).length > 0 ? views.headerCalculationsRow() : null),
 				views.filterRow()
 			])
 		]),
