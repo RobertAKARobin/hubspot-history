@@ -69,6 +69,9 @@ var API = {
 			Deals.all.forEach(Deals.formatProperties);
 			Deals.filter(Query.filter);
 			state.dealsLoadingStatus = 2;
+		}).catch(function(error){
+			state.dealsLoadingStatus = 3;
+			console.log(error)
 		});
 	},
 	getProperties: function(){
@@ -91,6 +94,11 @@ var API = {
 }
 
 window.addEventListener('DOMContentLoaded', function(){
+	var statusMessages = {
+		0: 'No deals loaded.',
+		1: 'Loading...',
+		3: 'The Hubspot server broke. Get a cup of coffee and then try again.'
+	}
 	m.mount(document.getElementById('snapshot'), {
 		oninit: function(){
 			API.getProperties();
@@ -116,11 +124,7 @@ window.addEventListener('DOMContentLoaded', function(){
 					(
 						state.dealsLoadingStatus == 2
 						? DealsView()
-						: m('div.dealLoadStatus',
-							state.dealsLoadingStatus == 1
-							? m('p', 'Loading...')
-							: m('p', 'No deals loaded.')
-						)
+						: m('div.dealLoadStatus', statusMessages[state.dealsLoadingStatus])
 					)
 				])
 			])
