@@ -216,6 +216,7 @@ Components.snapshot = function(){
 								colspan: (RequestedDealProperties.length + 1)
 							}, [
 								m('input', {
+									placeholder: 'Enter filter',
 									hasError: !!(state.filterError),
 									oninput: function(){
 										state.filterError = false;
@@ -246,7 +247,7 @@ Components.snapshot = function(){
 			return m('tr', [
 				m('th', {
 					title: 'dealId'
-				}),
+				}, '#'),
 				RequestedDealProperties.map(function(propertyName){
 					var property = DealPropertiesByName[propertyName];
 					return m('th', {
@@ -307,7 +308,7 @@ Components.snapshot = function(){
 		view: function(){
 			return m('div.wrap', [
 				m('div.sidebar', [
-					m('h1', 'Hubspot Snapshot'),
+					m('h1', 'Hubspot Deals'),
 					(
 						state.propertiesLoadingStatus == 2
 						? views.sidebar()

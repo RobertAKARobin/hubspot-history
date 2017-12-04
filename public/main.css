@@ -16,10 +16,10 @@
 	outline:none;
 }
 html, body{
-	font-family: "Nunito Sans", "Helvetica Neue", "Helvetica", sans-serif;
+	font-family: "Helvetica Neue", "Helvetica", "Arial", sans-serif;
 	font-size:14px;
 	line-height:22px;
-	color:#000;
+	color:#33475b;
 	background-color:#fff;
 }
 body{
@@ -30,16 +30,15 @@ div{
 	position:relative;
 }
 h1{
-	color: #14264a;
-	font-size:24px;
+	font-size:28px;
 	line-height:36px;
-	font-family:"Roboto Slab", Palatino, serif;
-	font-weight:bold;
 }
 a{
 	cursor:pointer;
+	color:#0091ae;
+}
+a:hover{
 	text-decoration:underline;
-	color:blue;
 }
 p{
 	display:block;
@@ -105,7 +104,7 @@ input[type=checkbox]:not(:checked)+span:after{
 }
 input[hasError]{
 	background-color:#fee;
-	color:#900;
+	color:#f00;
 }
 button{
 	display:block;
@@ -113,12 +112,12 @@ button{
 	cursor:pointer;
 	padding:0 30px;
 	line-height:30px;
-	border-radius:15px;
-	background-color:#14264a;
+	border-radius:3px;
 	color:#fff;
+	background-color:#ff7a59;
 }
 button:hover{
-	background-color:#00f;
+	background-color:#ff8f73;
 }
 
 .wrap{
@@ -129,13 +128,12 @@ button:hover{
 	overflow:hidden;
 }
 .wrap > .sidebar{
-	flex-basis:300px;
+	width:250px;
 	padding:10px;
-	background-color:#eee;
-	flex-grow:0;
 	flex-shrink:0;
 	z-index:2;
 	overflow-y:auto;
+	font-size:12px;
 }
 .wrap > .body{
 	flex-grow:1;
@@ -146,15 +144,24 @@ button:hover{
 	padding:10px;
 }
 
+.body{
+	border:1px solid #dfe3eb;
+	border-width:0 1px;
+}
+table.dealRows, table.dealHeaders{
+	border:0;
+}
 .dealHeaders{
 	width:100%;
 	z-index:100;
 	position:sticky;
 	top:0;
-	background-color:#fff;
+	background-color:#F5F8FA;
 }
-.dealHeaders thead{
-	background-color:#eee;
+.dealHeaders input{
+	background-color:transparent;
+	height:22px;
+	padding:0;
 }
 .dealRows{
 	z-index:99;
@@ -165,27 +172,24 @@ button:hover{
 	border-bottom:0;
 }
 
-
-.dealHeaders td{
-	padding:0 !important;
-}
-
-
 table{
 	border-spacing:0;
 	border-collapse:collapse;
 	min-width:100%;
 	table-layout:fixed;
-}
-th{
-	font-family:'Roboto Slab', serif;
-	font-weight:bold;
+	border:1px solid #dfe3eb;
 }
 td, th{
+	line-height:22px;
+	height:40px;
 	text-align:left;
 	vertical-align:top;
-	border-bottom:1px solid #eee;
-	padding:2px 4px;
+	border:1px solid #dfe3eb;
+	border-width:1px 0;
+	padding:9px 10px;
+}
+tr:hover{
+	background-color:#F5F8FA;	
 }
 tr > :not([data-propertytype=string]){
 	white-space:nowrap;
@@ -205,23 +209,30 @@ tr > :last-child{
 	min-height:18px;
 	width:100%;
 	overflow-y:auto;
-	background-color:#fff;
+	background-color:#EAF0F6;
+	border-width:1px 0 0 0;
+}
+.select tr:hover{
+	background-color:initial;
 }
 .select td{
-	font-size:14px;
-	line-height:18px;
+	height:auto;
 	border:0;
 	padding:0 10px;
+	cursor:pointer;
 }
 .select td[data-disabled]{
-	color:#999;
+	opacity:0.5;
 	cursor:default;
 }
 .select td:not([data-disabled]):hover{
-	background-color:#f6f6f6;
+	text-decoration:underline;
 }
 .select .paren{
-	color:#ddd;
+	opacity:0.5;
+}
+.select td[data-disabled] .paren{
+	opacity:1;
 }
 .select .paren:before{
 	content:' (';
@@ -236,19 +247,22 @@ tr > :last-child{
 
 [data-sortProperty]{
 	cursor:pointer;
-	text-decoration:underline;
 }
 [data-sortProperty]:hover{
-	color:#00f;
+	background-color:#DCEFF4;
 }
 [data-sortDirection]{
-	color:#00f;
+	background-color:#E1EAF1;
+}
+[data-sortDirection]:after{
+	display:inline-block;
+	padding-left:10px;
 }
 [data-sortDirection='desc']:after{
-	content:'\2191';
+	content:'[a-z]';
 }
 [data-sortDirection='asc']:after{
-	content:'\2193';
+	content:'[z-a]';
 }
 
 [data-propertyType='number'],
