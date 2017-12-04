@@ -2,24 +2,6 @@
 
 var Deals = (function(){
 
-	var Deal = {};
-	Deal.formatOneProperty = function(property){
-		var deal = this;
-		var value = deal[property.name];
-		switch(property.type){
-			case 'datetime':
-				value = (new Date(parseInt(value)))._toPrettyString();
-				break;
-			case 'currency':
-				value = (parseFloat(value) || 0).toFixed(2);
-				break;
-			case 'number':
-				value = (parseFloat(value) || 0);
-				break;
-		}
-		deal[property.name] = value;
-	}
-
 	var Deals = {
 		all: [],
 		allFiltered: [],
@@ -64,9 +46,6 @@ var Deals = (function(){
 			}
 		});
 	}
-	Deals.formatProperties = function(deal){
-		Object.values(Deals.propertiesRequested).forEach(Deal.formatOneProperty.bind(deal));
-	}
 	Deals.sort = function(property){
 		var fieldType = Deals.propertiesByName[property.name].type;
 		Deals.allFiltered._sortOn(function(deal){
@@ -80,7 +59,7 @@ var Deals = (function(){
 	}
 	Deals.sumBy = function(property){
 		return function(sum, deal){
-			return sum + parseFloat(deal[property.name]);
+			return sum + parseFloat(deal[property.name] || 0);
 		}
 	}
 

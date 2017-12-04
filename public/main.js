@@ -66,7 +66,6 @@ var API = {
 			HubspotPortalID = response.hubspotPortalID;
 			Deals.propertiesRequested = response.requestedProperties;
 			Deals.all = Object.values(response.deals);
-			Deals.all.forEach(Deals.formatProperties);
 			Deals.filter(Query.filter);
 			state.dealsLoadingStatus = 2;
 		}).catch(function(error){

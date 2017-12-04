@@ -107,9 +107,21 @@ var DealsView = function(){
 		},
 		dataColumn: function(property){
 			var deal = this;
+			var value = deal[property.name];
+			switch(property.type){
+				case 'datetime':
+					value = (new Date(parseInt(value)))._toPrettyString();
+					break;
+				case 'currency':
+					value = (parseFloat(value) || 0).toFixed(2);
+					break;
+				case 'number':
+					value = (parseFloat(value) || 0).toString();
+					break;
+			}
 			return m('td', {
 				'data-propertyType': property.type,
-			}, deal[property.name]);
+			}, value);
 		}
 	}
 
