@@ -253,7 +253,8 @@ Components.snapshot = function(){
 					return m('th', {
 						title: property.name,
 						'data-propertyType': property.type,
-						'data-sortProperty': (isClickable ? property.name : false),
+						'data-sortProperty': property.name,
+						'data-enabled': !!(isClickable),
 						'data-sortDirection': (state.sortProperty == property.name ? state.sortDirection : false),
 						onclick: (isClickable ? sortOnColumn.bind(property) : false)
 					}, property.label)
