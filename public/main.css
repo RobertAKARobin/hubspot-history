@@ -33,6 +33,9 @@ h1{
 	font-size:28px;
 	line-height:36px;
 }
+strong{
+	font-weight:bold;
+}
 a{
 	cursor:pointer;
 	color:#0091ae;
@@ -229,7 +232,7 @@ tr > :last-child{
 [data-sortProperty][data-enabled]:hover{
 	background-color:#DCEFF4;
 }
-[data-sortDirection]{
+.dealHeaders th[data-sortDirection]{
 	background-color:#E1EAF1;
 }
 [data-sortDirection] .title:after{
@@ -267,6 +270,33 @@ th .sum{
 	margin-bottom:0;
 	margin-right:10px;
 }
-.tableOptions > *{
-	/* outline:1px solid blue; */
+[hasError]{
+	color:#f00;
+	background-color:#fee;
+}
+[data-hasTooltip]{
+	position:relative;
+}
+[data-hasTooltip] + .tooltip{
+	display:none;
+}
+[data-hasTooltip]:hover + .tooltip,
+.tooltip:hover{
+	position:absolute;
+	display:block;
+	top:0;
+	left:0;
+	font-size:12px;
+	line-height:16px;
+	width:400px;
+	min-height:100px;
+	background-color:rgba(255,255,255,0.95);
+	border:5px solid #dfe3eb;
+	box-shadow:0 0 20px 0 rgba(0,0,0,0.5);
+	padding:10px;
+	z-index:9999;
+	white-space:pre-wrap;
+}
+.tooltip{
+	cursor:default;
 }

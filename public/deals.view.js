@@ -8,14 +8,34 @@ var DealsView = function(){
 					colspan: Object.keys(Deals.propertiesRequested).length + 1
 				}, [
 					m('div.tableOptions', [
-						m('label', {
-							for: 'filter'
-						}, 'Showing ' + Deals.allFiltered.length + ' of ' + Deals.all.length + '. Filter on:'),
+						m('div', [
+							'Showing ' + Deals.allFiltered.length + ' of ' + Deals.all.length + '. ',
+							m('a', {
+								'data-hasTooltip': true
+							}, 'Filter on:'),
+							m('span.tooltip', [
+								"Filters are case-sensitive.",
+								"Each property must begin with $.",
+								"Math operators are >, <, =, ≠, ≥, and ≤.",
+								"Logical operators are AND, OR, and NOT.",
+								"Use HAS to filter on text that contains other text.",
+								"Wrap everything but integers in 'quotes.'",
+								"",
+								"For example:",
+								"$dealname = 'Business Company Inc.'",
+								"$dealname has 'Business' or $dealname has 'Company'",
+								"$createdate ≥ '14/12/01' and $createdate ≤ '14/12/31'",
+								"$amount ≠ 0",
+								"$amount = 1000",
+								"$amount > 5000 and not ($dealstage = 'Lost')"
+							].join('\n'))
+						]),
 						m('input', {
 							id: 'filter',
 							value: state.enteredFilter,
 							placeholder: 'Enter filter',
 							hasError: !!(state.filterError),
+							spellcheck: false,
 							onkeyup: function(event){
 								var isReturn = (event.keyCode == 13);
 								var filterString = event.target.value;

@@ -97,7 +97,12 @@ window.addEventListener('DOMContentLoaded', function(){
 	var statusMessages = {
 		0: 'No deals loaded.',
 		1: 'Loading...',
-		3: 'The Hubspot server broke. Get a cup of coffee and then try again.'
+		3: [
+			'The Hubspot server broke. Get a cup of coffee and then try again. Keep an eye on ',
+			m('a', {
+				href: 'https://status.hubspot.com'
+			}, 'status.hubspot.com')
+		]
 	}
 	m.mount(document.getElementById('snapshot'), {
 		oninit: function(){
