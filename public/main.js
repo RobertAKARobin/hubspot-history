@@ -53,7 +53,7 @@ var updateQueryString = function(){
 var API = {
 	getDeals: function(){
 		var qs = JSON.parse(JSON.stringify(Location.query()));
-		qs.properties = Deals.propertiesDefault.concat(qs.properties).join(',');
+		qs.properties = Deals.defaultPropertyNames.concat(qs.properties).join(',');
 		state.dealsLoadingStatus = 1;
 		Deals.all = [];
 		m.request({
@@ -62,7 +62,7 @@ var API = {
 			data: qs
 		}).then(function(response){
 			HubspotPortalID = response.hubspotPortalID;
-			Deals.propertiesRequested = Object.keys(response.requestedProperties);
+			Deals.propertiesRequested = response.requestedProperties;
 			Deals.all = Object.values(response.deals);
 			Deals.all.forEach(Deals.formatProperties);
 			Deals.filter('');

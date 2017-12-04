@@ -2,13 +2,31 @@
 
 var Deals = (function(){
 
+	var Deal = {};
+	Deal.formatOneProperty = function(property){
+		var deal = this;
+		var value = deal[property.name];
+		switch(property.type){
+			case 'datetime':
+				value = (new Date(parseInt(value)))._toPrettyString();
+				break;
+			case 'currency':
+				value = (parseFloat(value) || 0).toFixed(2);
+				break;
+			case 'number':
+				value = (parseFloat(value) || 0);
+				break;
+		}
+		deal[property.name] = value;
+	}
+
 	var Deals = {
 		all: [],
 		allFiltered: [],
 		properties: [],
 		propertiesByName: {},
-		propertiesDefault: ['dealname', 'createdate', 'dealstage'],
-		propertiesRequested: [],
+		propertiesRequested: {},
+		defaultPropertyNames: ['dealname', 'createdate', 'dealstage'],
 		calculations: {},
 	};
 	
@@ -36,61 +54,33 @@ var Deals = (function(){
 				return quotes.shift();
 			});
 		console.log(filterString)
-		try{
-			var filterFunction  = new Function('deal', 'return ' + (filterString || 'true'));
-			Deals.allFiltered = Deals.all.filter(filterFunction);
-			Deals.calculations = {};
-			Deals.propertiesRequested.forEach(function(propertyName){
-				var property = Deals.propertiesByName[propertyName];
-				if(property.type == 'number' || property.type == 'currency'){
-					Deals.calculations[propertyName] = Deals.allFiltered.reduce(Deals.sumBy(property.name), 0);
-				}
-			});
-		}catch(e){
-			state.filterError = true;
-			return false;
-		}
+
+		var filterFunction  = new Function('deal', 'return ' + (filterString || 'true'));
+		Deals.allFiltered = Deals.all.filter(filterFunction);
+		Deals.calculations = {};
+		Object.values(Deals.propertiesRequested).forEach(function(property){
+			if(property.type == 'number' || property.type == 'currency'){
+				Deals.calculations[propertyName] = Deals.allFiltered.reduce(Deals.sumBy(property), 0);
+			}
+		});
 	}
 	Deals.formatProperties = function(deal){
-		Deals.propertiesRequested.forEach(Deals.formatOneProperty.bind(deal));
+		Object.values(Deals.propertiesRequested).forEach(Deal.formatOneProperty.bind(deal));
 	}
-	Deals.formatOneProperty = function(propertyName){
-		var deal = this;
-		var value = deal[propertyName];
-		switch(Deals.propertiesByName[propertyName].type){
-			case 'datetime':
-				value = (new Date(parseInt(value)))._toPrettyString();
-				break;
-			case 'currency':
-				value = (parseFloat(value) || 0).toFixed(2);
-				break;
-			case 'number':
-				value = (parseFloat(value) || 0);
-				break;
-		}
-		deal[propertyName] = value;
-	}
-	Deals.sort = function(){
-		var property = this;
-		state.sortProperty = property.name;
-		state.sortDirection = (state.sortDirection == 'asc' ? 'desc' : 'asc');
-
-		var fieldType = Deals.propertiesByName[state.sortProperty].type;
+	Deals.sort = function(property){
+		var fieldType = Deals.propertiesByName[property.name].type;
 		Deals.allFiltered._sortOn(function(deal){
-			var value = deal[state.sortProperty];
+			var value = deal[property.name];
 			if(fieldType == 'number' || fieldType == 'currency'){
 				return parseFloat(value || 0);
 			}else if(value){
 				return (value || '').toString().toLowerCase().replace(/[^a-zA-Z0-9]/g,'');
 			}
 		});
-		if(state.sortDirection == 'asc'){
-			Deals.allFiltered.reverse();
-		}
 	}
-	Deals.sumBy = function(propertyName){
+	Deals.sumBy = function(property){
 		return function(sum, deal){
-			return sum + parseFloat(deal[propertyName]);
+			return sum + parseFloat(deal[property.name]);
 		}
 	}
 

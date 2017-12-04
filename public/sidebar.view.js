@@ -5,7 +5,7 @@ var SidebarView = function(){
 		selectablePropertyRow: function(property){
 			return m('tr', [
 				m('td', {
-					'data-isHidden': (Deals.propertiesDefault.includes(property.name) || Query.properties.includes(property.name)),
+					'data-isHidden': (Deals.defaultPropertyNames.includes(property.name) || Query.properties.includes(property.name)),
 					onclick: addPropertyToQueryString.bind(property),
 					title: property.name
 				}, [
@@ -15,7 +15,7 @@ var SidebarView = function(){
 			])
 		},
 		nonSelectablePropertyRow: function(propertyName){
-			var isDefaultDealProperty = Deals.propertiesDefault.includes(propertyName);
+			var isDefaultDealProperty = Deals.defaultPropertyNames.includes(propertyName);
 			var property = Deals.propertiesByName[propertyName];
 			if(property){
 				return m('tr', [
@@ -42,7 +42,7 @@ var SidebarView = function(){
 		m('p', "De-select properties:"),
 		m('div.select', [
 			m('table', [
-				Deals.propertiesDefault.concat(Query.properties).map(views.nonSelectablePropertyRow)
+				Deals.defaultPropertyNames.concat(Query.properties).map(views.nonSelectablePropertyRow)
 			])
 		]),
 		m('button', {

@@ -5,7 +5,7 @@ var DealsView = function(){
 		filterRow: function(){
 			return m('tr', [
 				m('td', {
-					colspan: (Deals.propertiesRequested.length + 1)
+					colspan: Object.keys(Deals.propertiesRequested).length + 1
 				}, [
 					m('input', {
 						placeholder: 'Enter filter',
@@ -17,7 +17,11 @@ var DealsView = function(){
 							var isReturn = (event.keyCode == 13);
 							if(isReturn){
 								event.preventDefault();
-								Deals.filter(event.target.value);
+								try{
+									Deals.filter(event.target.value);
+								}catch(e){
+									state.filterError = true;
+								}
 							}
 						}
 					})
@@ -29,15 +33,21 @@ var DealsView = function(){
 				m('th', {
 					title: 'dealId'
 				}, '#'),
-				Deals.propertiesRequested.map(function(propertyName){
-					var property = Deals.propertiesByName[propertyName];
+				Object.values(Deals.propertiesRequested).map(function(property){
 					return m('th', {
 						title: property.name,
 						'data-propertyType': property.type,
 						'data-sortProperty': property.name,
 						'data-enabled': !!(isClickable),
 						'data-sortDirection': (state.sortProperty == property.name ? state.sortDirection : false),
-						onclick: (isClickable ? Deals.sort.bind(property) : false)
+						onclick: (isClickable ? function(event){
+							state.sortProperty = property.name;
+							state.sortDirection = (state.sortDirection == 'asc' ? 'desc' : 'asc');
+							Deals.sort(property);
+							if(state.sortDirection == 'asc'){
+								Deals.allFiltered.reverse();
+							}
+						 } : false)
 					}, property.label)
 				})
 			])
@@ -45,8 +55,7 @@ var DealsView = function(){
 		headerCalculationsRow: function(){
 			return m('tr.subheader', [
 				m('td'),
-				Deals.propertiesRequested.map(function(propertyName){
-					var property = Deals.propertiesByName[propertyName];
+				Object.values(Deals.propertiesRequested).map(function(property){
 					var value = Deals.calculations[property.name];
 					if(value){
 						if(property.type == 'currency'){
@@ -67,12 +76,11 @@ var DealsView = function(){
 						href: 'https://app.hubspot.com/sales/' + HubspotPortalID + '/deal/' + deal.dealId
 					}, Deals.allFiltered.length - dealIndex)
 				]),
-				Deals.propertiesRequested.map(views.dataColumn.bind(deal))
+				Object.values(Deals.propertiesRequested).map(views.dataColumn.bind(deal))
 			])
 		},
-		dataColumn: function(propertyName){
+		dataColumn: function(property){
 			var deal = this;
-			var property = Deals.propertiesByName[propertyName];
 			return m('td', {
 				'data-propertyType': property.type,
 			}, deal[property.name]);
