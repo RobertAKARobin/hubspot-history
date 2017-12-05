@@ -70,8 +70,8 @@ httpServer
 				propertiesWithHistory: !!(req.query.includeHistory),
 				properties: Object.keys(req.properties)
 			}
-			req.limitToFirst = true;
-			// req.limitToFirst = req.query.limitToFirst;
+			// req.limitToFirst = true;
+			req.limitToFirst = req.query.limitToFirst;
 			next();
 		},
 		HS.getDeals,
