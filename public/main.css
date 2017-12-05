@@ -118,7 +118,7 @@ button:hover{
 	border:1px solid #dfe3eb;
 	border-width:0 1px;
 }
-table.dealRows, table.dealHeaders{
+table.dealData, table.dealHeaders{
 	border:0;
 }
 .dealHeaders{
@@ -138,11 +138,11 @@ table.dealRows, table.dealHeaders{
 	padding-top:0;
 	padding-bottom:0;
 }
-.dealRows{
+.dealData{
 	z-index:99;
 	position:relative;
 }
-.dealRows thead th{
+.dealData .headerRow th{
 	visibility:hidden;
 	border-bottom:0;
 }

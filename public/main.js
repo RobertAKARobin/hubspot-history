@@ -94,46 +94,6 @@ var API = {
 }
 
 window.addEventListener('DOMContentLoaded', function(){
-	var statusMessages = {
-		0: 'No deals loaded.',
-		1: 'Loading...',
-		2: 'Success!',
-		3: [
-			'The Hubspot server broke. Get a cup of coffee and then try again. Keep an eye on ',
-			m('a', {
-				href: 'https://status.hubspot.com'
-			}, 'status.hubspot.com')
-		]
-	}
-	m.mount(document.getElementById('snapshot'), {
-		oninit: function(){
-			API.getProperties();
-		},
-		onupdate: function(){
-			var hiddenDealHeaders = document.querySelectorAll('.dealHeaderColumnsDummy th');
-			var dealHeaders = document.querySelectorAll('.dealHeaderColumns th');
-			for(var i = 0; i < hiddenDealHeaders.length; i++){
-				dealHeaders[i].style.width = hiddenDealHeaders[i].clientWidth + 'px';
-			}
-		},
-		view: function(){
-			return m('div.wrap', [
-				m('div.sidebar', [
-					m('h1', 'Hubspot Deals'),
-					(
-						state.propertiesLoadingStatus == 2
-						? SidebarView()
-						: m('p', 'Loading...')
-					)
-				]),
-				m('div.body', [
-					(
-						state.dealsLoadingStatus == 2
-						? DealsView()
-						: m('div.dealLoadStatus', statusMessages[state.dealsLoadingStatus])
-					)
-				])
-			])
-		}
-	});
+	m.mount(document.getElementById('properties'), SidebarView);
+	m.mount(document.getElementById('data'), DealsView);
 });

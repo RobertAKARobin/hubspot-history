@@ -29,26 +29,45 @@ var SidebarView = (function(){
 					])
 				])
 			}
+		},
+		Main: function(){
+			return [
+				m('p', "Select properties:"),
+				m('div.select', [
+					m('table', [
+						Deals.properties.map(views.selectablePropertyRow)
+					])
+				]),
+				m('p', "De-select properties:"),
+				m('div.select', [
+					m('table', [
+						Deals.defaultPropertyNames.concat(Query.properties).map(views.nonSelectablePropertyRow)
+					])
+				]),
+				m('button', {
+					onclick: API.getDeals
+				}, 'Load')
+			]
 		}
 	}
 
-	return function(){
-		return [
-			m('p', "Select properties:"),
-			m('div.select', [
-				m('table', [
-					Deals.properties.map(views.selectablePropertyRow)
-				])
-			]),
-			m('p', "De-select properties:"),
-			m('div.select', [
-				m('table', [
-					Deals.defaultPropertyNames.concat(Query.properties).map(views.nonSelectablePropertyRow)
-				])
-			]),
-			m('button', {
-				onclick: API.getDeals
-			}, 'Load')
-		]
+	return {
+		oninit: function(){
+			API.getProperties();
+		},
+		onupdate: function(){
+			var hiddenDealHeaders = document.querySelectorAll('.dealHeaderColumnsDummy th');
+			var dealHeaders = document.querySelectorAll('.dealHeaderColumns th');
+			for(var i = 0; i < hiddenDealHeaders.length; i++){
+				dealHeaders[i].style.width = hiddenDealHeaders[i].clientWidth + 'px';
+			}
+		},
+		view: function(){
+			if(state.propertiesLoadingStatus == 2){
+				return views.Main();
+			}else{
+				return m('p', 'Loading...');
+			}
+		}
 	}
 })();

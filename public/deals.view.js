@@ -3,7 +3,7 @@
 var DealsView = (function(){
 	var views = {
 		filterRow: function(){
-			return m('tr', [
+			return m('tr.filterRow', [
 				m('td', {
 					colspan: Object.keys(Deals.propertiesRequested).length + 1
 				}, [
@@ -58,7 +58,7 @@ var DealsView = (function(){
 			])
 		},
 		headerTitlesRow: function(isClickable){
-			return m('tr', [
+			return m('tr.headerRow', [
 				m('th', {
 					title: 'dealId'
 				}, '#'),
@@ -119,25 +119,47 @@ var DealsView = (function(){
 			return m('td', {
 				'data-propertyType': property.type,
 			}, value);
+		},
+		Main: function(){
+			return [
+				m('table.dealHeaders', [
+					views.headerTitlesRow('clickable'),
+					views.filterRow()
+				]),
+				m('table.dealData', [
+					views.headerTitlesRow(),
+					Deals.allFiltered.map(views.dataRow)
+				])
+			]
 		}
 	}
 
-	return function(){
-		return [
-			m('table.dealHeaders', [
-				m('thead.dealHeaderColumns', [
-					views.headerTitlesRow(true),
-					views.filterRow()
-				])
-			]),
-			m('table.dealRows', [
-				m('thead.dealHeaderColumnsDummy', [
-					views.headerTitlesRow()
-				]),
-				m('tbody', [
-					Deals.allFiltered.map(views.dataRow)
-				])
-			])
+	var statusMessages = {
+		0: 'No deals loaded.',
+		1: 'Loading...',
+		2: 'Success!',
+		3: [
+			'The Hubspot server broke. Get a cup of coffee and then try again. Keep an eye on ',
+			m('a', {
+				href: 'https://status.hubspot.com'
+			}, 'status.hubspot.com')
 		]
+	}
+
+	return {
+		onupdate: function(){
+			var hiddenDealHeaders = document.querySelectorAll('.dealData .headerRow th');
+			var dealHeaders = document.querySelectorAll('.dealHeaders .headerRow th');
+			for(var i = 0; i < hiddenDealHeaders.length; i++){
+				dealHeaders[i].style.width = hiddenDealHeaders[i].clientWidth + 'px';
+			}
+		},
+		view: function(){
+			if(state.dealsLoadingStatus == 2){
+				return views.Main();
+			}else{
+				return m('div.dealLoadStatus', statusMessages[state.dealsLoadingStatus]);
+			}
+		}
 	}
 })();
