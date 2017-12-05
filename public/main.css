@@ -306,12 +306,13 @@ th .sum{
 	line-height:16px;
 	width:400px;
 	min-height:100px;
-	background-color:rgba(255,255,255,0.95);
-	border:5px solid #dfe3eb;
+	color:#fff;
+	background-color:rgba(50,50,50,0.9);
 	box-shadow:0 0 20px 0 rgba(0,0,0,0.5);
 	padding:10px;
 	z-index:9999;
 	white-space:pre-wrap;
+	border-radius:3px;
 }
 .tooltip{
 	cursor:default;
