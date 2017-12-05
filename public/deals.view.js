@@ -70,17 +70,18 @@ var DealsView = (function(){
 						'data-propertyType': property.type,
 						'data-sortProperty': property.name,
 						'data-enabled': !!(isClickable),
-						'data-sortDirection': (state.sortProperty == property.name ? state.sortDirection : false),
-						onclick: (isClickable ? function(event){
-							state.sortProperty = property.name;
-							state.sortDirection = (state.sortDirection == 'asc' ? 'desc' : 'asc');
-							Deals.sort(property);
-							if(state.sortDirection == 'asc'){
-								Deals.allFiltered.reverse();
-							}
-						 } : false)
+						'data-sortDirection': (state.sortProperty == property.name ? state.sortDirection : false)
 					}, [
-						m('span.title', property.label),
+						m('span.title', {
+							onclick: (isClickable ? function(event){
+								state.sortProperty = property.name;
+								state.sortDirection = (state.sortDirection == 'asc' ? 'desc' : 'asc');
+								Deals.sort(property);
+								if(state.sortDirection == 'asc'){
+									Deals.allFiltered.reverse();
+								}
+							 } : false)
+						}, property.label),
 						(
 							property.type == 'number' || property.type == 'currency'
 							? m('span.sum',
@@ -104,23 +105,24 @@ var DealsView = (function(){
 						href: 'https://app.hubspot.com/sales/' + HubspotPortalID + '/deal/' + deal.dealId
 					}, dealIndex + 1)
 				]),
-				Object.values(Deals.propertiesRequested).map(views.dataColumn.bind(deal))
+				Object.values(Deals.propertiesRequested).map(views.dataColumn(deal))
 			])
 		},
-		dataColumn: function(property){
-			var deal = this;
-			var value = deal[property.name];
-			switch(property.type){
-				case 'currency':
-					value = (parseFloat(value) || 0)._toDollars();
-					break;
-				case 'number':
-					value = (parseFloat(value) || 0).toString();
-					break;
+		dataColumn: function(deal){
+			return function(property){
+				var value = deal[property.name];
+				switch(property.type){
+					case 'currency':
+						value = (parseFloat(value) || 0)._toDollars();
+						break;
+					case 'number':
+						value = (parseFloat(value) || 0).toString();
+						break;
+				}
+				return m('td', {
+					'data-propertyType': property.type,
+				}, value);
 			}
-			return m('td', {
-				'data-propertyType': property.type,
-			}, value);
 		},
 		Main: function(){
 			return [

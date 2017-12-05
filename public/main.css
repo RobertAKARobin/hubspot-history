@@ -232,10 +232,7 @@ tr > :last-child{
 	display:none;
 }
 
-[data-sortProperty][data-enabled]{
-	cursor:pointer;
-}
-[data-sortProperty][data-enabled]:hover{
+[data-sortProperty]:hover{
 	background-color:#DCEFF4;
 }
 .dealHeaders th[data-sortDirection]{
@@ -257,10 +254,18 @@ tr > :last-child{
 [data-propertyType='currency']{
 	text-align:right;
 }
-
-th .sum{
+th .title{
+	cursor:pointer;
+}
+th .sum,
+th .title{
 	display:block;
 }
+th .sum{
+	text-decoration:underline;
+	cursor:pointer;
+}
+
 .idlink{
 	display:block;
 }
