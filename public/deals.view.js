@@ -47,6 +47,8 @@ var DealsView = (function(){
 										Deals.filter(filterString);
 										Query.filter = filterString;
 										updateQueryString();
+										state.sortProperty = null;
+										state.sortDirection = null;
 									}catch(e){
 										state.filterError = true;
 									}

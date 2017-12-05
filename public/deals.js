@@ -67,7 +67,7 @@ var Deals = (function(){
 		}
 	}
 	Deals.sort = function(property){
-		var fieldType = Deals.propertiesByName[property.name].type;
+		var fieldType = property.type;
 		Deals.allFiltered._sortOn(function(deal){
 			var value = deal[property.name];
 			if(fieldType == 'number' || fieldType == 'currency'){
