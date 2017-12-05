@@ -49,7 +49,7 @@ var Deals = (function(){
 					sum: Math._sum(values),
 					mean: Math._mean(values),
 					median: Math._median(values),
-					mode: values._mode()
+					mode: Math._mode(values)
 				}
 			}
 		});

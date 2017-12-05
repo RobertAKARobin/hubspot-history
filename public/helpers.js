@@ -139,6 +139,10 @@ Math._median = function(array){
 		return values[middleIndex + 1];
 	}
 }
+Math._mode = function(array){
+	var values = array.sort()._removeNonNumbers();
+	return values._mode();
+}
 Object.defineProperty(Object.prototype, '_merge', {
 	enumerable: false,
 	value: function(input){
