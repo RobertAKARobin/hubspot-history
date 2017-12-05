@@ -6,6 +6,10 @@ Number.prototype._leftpad = function(places){
 	var number = this;
 	return (Array(places || 1).join('0') + number).slice(0 - places);
 }
+Number.prototype._toDollars = function(){
+	var number = this;
+	return '$' + number.toFixed(2).replace(/(\d)(?=(\d\d\d)+(?!\d))/g, '$1,');
+}
 Array._fromCSV = function(string){
 	string = (string || '').trim();
 	return (string ? string.split(',') : []);

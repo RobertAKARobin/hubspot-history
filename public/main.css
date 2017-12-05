@@ -257,9 +257,6 @@ tr > :last-child{
 [data-propertyType='currency']{
 	text-align:right;
 }
-td[data-propertyType='currency']:before{
-	content:'$';
-}
 
 th .sum{
 	display:block;

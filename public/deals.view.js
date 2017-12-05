@@ -84,7 +84,7 @@ var DealsView = function(){
 							? m('span.sum',
 								(
 									property.type == 'currency'
-									? '$' + Deals.calculations[property.name].toFixed(2)
+									? Deals.calculations[property.name]._toDollars()
 									: Deals.calculations[property.name].toString()
 								)
 							)
@@ -113,7 +113,7 @@ var DealsView = function(){
 					value = (new Date(parseInt(value)))._toPrettyString();
 					break;
 				case 'currency':
-					value = (parseFloat(value) || 0).toFixed(2);
+					value = (parseFloat(value) || 0)._toDollars();
 					break;
 				case 'number':
 					value = (parseFloat(value) || 0).toString();
