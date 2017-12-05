@@ -109,9 +109,6 @@ var DealsView = function(){
 			var deal = this;
 			var value = deal[property.name];
 			switch(property.type){
-				case 'datetime':
-					value = (new Date(parseInt(value)))._toPrettyString();
-					break;
 				case 'currency':
 					value = (parseFloat(value) || 0)._toDollars();
 					break;

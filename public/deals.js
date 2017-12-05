@@ -46,6 +46,18 @@ var Deals = (function(){
 			}
 		});
 	}
+	Deals.formatProperty = function(property){
+		var propertyName = property.name;
+		console.log(propertyName)
+		switch(property.type){
+			case 'datetime':
+				Deals.all.forEach(function(deal){
+					var value = parseInt(deal[propertyName]);
+					deal[propertyName] = (new Date(value))._toPrettyString();
+				})
+				break;
+		}
+	}
 	Deals.sort = function(property){
 		var fieldType = Deals.propertiesByName[property.name].type;
 		Deals.allFiltered._sortOn(function(deal){
