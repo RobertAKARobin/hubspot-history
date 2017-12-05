@@ -84,8 +84,8 @@ var DealsView = function(){
 							? m('span.sum',
 								(
 									property.type == 'currency'
-									? Deals.calculations[property.name]._toDollars()
-									: Deals.calculations[property.name].toString()
+									? Deals.calculations[property.name].sum._toDollars()
+									: Deals.calculations[property.name].sum.toString()
 								)
 							)
 							: null

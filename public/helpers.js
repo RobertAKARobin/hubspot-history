@@ -78,6 +78,34 @@ Array.prototype._remove = function(item){
 	}
 	return array;
 }
+Array.prototype._frequencies = function(){
+	var array = this;
+	var frequenciesByValue = {};
+	array.forEach(function(value){
+		frequenciesByValue[value] = (frequenciesByValue[value] || 0) + 1;
+	});
+	return frequenciesByValue;
+}
+Array.prototype._mode = function(){
+	var array = this;
+	var frequenciesByValue = array._frequencies();
+	var greatestFrequency = 0;
+	var mode;
+	for(var value in frequenciesByValue){
+		if(frequenciesByValue[value] > greatestFrequency){
+			greatestFrequency = frequenciesByValue[value];
+			mode = value;
+		}
+	}
+	return value;
+}
+Array.prototype._removeNonNumbers = function(){
+	var array = this;
+	var tester = /^[0-9\.]+$/;
+	return array.filter(function(value){
+		return tester.test((value || '').toString());
+	});
+}
 Date.prototype._toPrettyString = function(){
 	var date = this;
 	return [
@@ -91,6 +119,25 @@ Date.prototype._toPrettyString = function(){
 		':',
 		date.getMinutes()._leftpad(2)
 	].join('');
+}
+Math._sum = function(array){
+	return array.reduce(function(sum, item){
+		return sum + (item || 0);
+	}, 0);
+}
+Math._mean = function(array){
+	var sum = Math._sum(array);
+	return (sum / array.length);
+}
+Math._median = function(array){
+	var values = array.sort()._removeNonNumbers();
+	var numValues = values.length;
+	var middleIndex = Math.floor(numValues / 2);
+	if(numValues % 2 === 0){
+		return (values[middleIndex - 1] + values[middleIndex]) / 2.0;
+	}else{
+		return values[middleIndex + 1];
+	}
 }
 Object.defineProperty(Object.prototype, '_merge', {
 	enumerable: false,

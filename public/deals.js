@@ -9,7 +9,7 @@ var Deals = (function(){
 		propertiesByName: {},
 		propertiesRequested: {},
 		defaultPropertyNames: ['dealname', 'createdate', 'dealstage'],
-		calculations: {},
+		calculations: {}
 	};
 	
 	Deals.filter = function(filterString){
@@ -42,20 +42,28 @@ var Deals = (function(){
 		Deals.calculations = {};
 		Object.values(Deals.propertiesRequested).forEach(function(property){
 			if(property.type == 'number' || property.type == 'currency'){
-				Deals.calculations[property.name] = Deals.allFiltered.reduce(Deals.sumBy(property), 0);
+				var values = Deals.allFiltered.map(function(deal){
+					return deal[property.name];
+				});
+				Deals.calculations[property.name] = {
+					sum: Math._sum(values),
+					mean: Math._mean(values),
+					median: Math._median(values),
+					mode: values._mode()
+				}
 			}
 		});
 	}
 	Deals.formatProperty = function(property){
 		var propertyName = property.name;
-		console.log(propertyName)
-		switch(property.type){
-			case 'datetime':
-				Deals.all.forEach(function(deal){
-					var value = parseInt(deal[propertyName]);
-					deal[propertyName] = (new Date(value))._toPrettyString();
-				})
-				break;
+		if(property.type == 'datetime'){
+			Deals.all.forEach(function(deal){
+				deal[propertyName] = (new Date(parseInt(deal[propertyName])))._toPrettyString();
+			});
+		}else if(property.type == 'number' || property.type == 'currency'){
+			Deals.all.forEach(function(deal){
+				deal[propertyName] = (parseFloat(deal[propertyName]) || undefined);
+			});
 		}
 	}
 	Deals.sort = function(property){
@@ -68,11 +76,6 @@ var Deals = (function(){
 				return (value || '').toString().toLowerCase().replace(/[^a-zA-Z0-9]/g,'');
 			}
 		});
-	}
-	Deals.sumBy = function(property){
-		return function(sum, deal){
-			return sum + parseFloat(deal[property.name] || 0);
-		}
 	}
 
 	return Deals;
