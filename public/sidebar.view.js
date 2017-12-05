@@ -1,6 +1,6 @@
 'use strict';
 
-var SidebarView = function(){
+var SidebarView = (function(){
 	var views = {
 		selectablePropertyRow: function(property){
 			return m('tr', [
@@ -32,21 +32,23 @@ var SidebarView = function(){
 		}
 	}
 
-	return [
-		m('p', "Select properties:"),
-		m('div.select', [
-			m('table', [
-				Deals.properties.map(views.selectablePropertyRow)
-			])
-		]),
-		m('p', "De-select properties:"),
-		m('div.select', [
-			m('table', [
-				Deals.defaultPropertyNames.concat(Query.properties).map(views.nonSelectablePropertyRow)
-			])
-		]),
-		m('button', {
-			onclick: API.getDeals
-		}, 'Load')
-	]
-}
+	return function(){
+		return [
+			m('p', "Select properties:"),
+			m('div.select', [
+				m('table', [
+					Deals.properties.map(views.selectablePropertyRow)
+				])
+			]),
+			m('p', "De-select properties:"),
+			m('div.select', [
+				m('table', [
+					Deals.defaultPropertyNames.concat(Query.properties).map(views.nonSelectablePropertyRow)
+				])
+			]),
+			m('button', {
+				onclick: API.getDeals
+			}, 'Load')
+		]
+	}
+})();

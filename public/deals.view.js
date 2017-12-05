@@ -1,6 +1,6 @@
 'use strict';
 
-var DealsView = function(){
+var DealsView = (function(){
 	var views = {
 		filterRow: function(){
 			return m('tr', [
@@ -122,20 +122,22 @@ var DealsView = function(){
 		}
 	}
 
-	return [
-		m('table.dealHeaders', [
-			m('thead.dealHeaderColumns', [
-				views.headerTitlesRow(true),
-				views.filterRow()
-			])
-		]),
-		m('table.dealRows', [
-			m('thead.dealHeaderColumnsDummy', [
-				views.headerTitlesRow()
+	return function(){
+		return [
+			m('table.dealHeaders', [
+				m('thead.dealHeaderColumns', [
+					views.headerTitlesRow(true),
+					views.filterRow()
+				])
 			]),
-			m('tbody', [
-				Deals.allFiltered.map(views.dataRow)
+			m('table.dealRows', [
+				m('thead.dealHeaderColumnsDummy', [
+					views.headerTitlesRow()
+				]),
+				m('tbody', [
+					Deals.allFiltered.map(views.dataRow)
+				])
 			])
-		])
-	]
-}
+		]
+	}
+})();
