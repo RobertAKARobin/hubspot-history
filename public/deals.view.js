@@ -33,7 +33,7 @@ var DealsView = function(){
 						m('input', {
 							id: 'filter',
 							value: state.enteredFilter,
-							placeholder: 'Enter filter',
+							placeholder: 'Enter filter...',
 							hasError: !!(state.filterError),
 							spellcheck: false,
 							onkeyup: function(event){

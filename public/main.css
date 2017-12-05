@@ -280,8 +280,21 @@ th .sum{
 	color:#f00;
 	background-color:#fee;
 }
-[data-hasTooltip]{
+[data-hasTooltip]:before{
+	content:'?';
+	display:inline-block;
 	position:relative;
+	bottom:1px;
+	margin-right:3px;
+	border-radius:50%;
+	width:10px;
+	height:10px;
+	font-size:9px;
+	line-height:10px;
+	background-color:#fff;
+	border:1px solid #0091ae;
+	vertical-align:middle;
+	text-align:center;
 }
 [data-hasTooltip] + .tooltip{
 	display:none;
