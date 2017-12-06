@@ -170,7 +170,7 @@ var DealsView = (function(){
 
 	var statusMessages = {
 		0: 'No deals loaded.',
-		1: 'Loading...',
+		1: 'Loading a lot of data. Wait ten seconds...',
 		2: 'Success!',
 		3: [
 			'The Hubspot server broke. Get a cup of coffee and then try again. Keep an eye on ',
