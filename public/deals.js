@@ -61,8 +61,8 @@ var Deals = (function(){
 				});
 				Deals.calculations[property.name] = {
 					sum: Math._sum(values),
-					mean: Math._mean(values),
-					median: Math._median(values),
+					avg: Math._mean(values),
+					med: Math._median(values),
 					mode: Math._mode(values)
 				}
 			}

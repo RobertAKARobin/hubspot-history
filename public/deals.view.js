@@ -14,8 +14,8 @@ var DealsView = (function(){
 
 	var calcTypes = [
 		'sum',
-		'mean',
-		'median',
+		'avg',
+		'med',
 		'mode'
 	]
 

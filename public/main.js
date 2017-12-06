@@ -69,8 +69,13 @@ var API = {
 			Deals.all = Object.values(response.deals);
 			Object.values(Deals.propertiesRequested).forEach(function(property){
 				Deals.formatProperty(property);
-				if(property.type == 'number' || property.type == 'currency'){
-					state.calcTypes[property.name] = 'sum';
+				switch(property.type){
+					case 'number':
+						state.calcTypes[property.name] = 'avg';
+						break;
+					case 'currency':
+						state.calcTypes[property.name] = 'sum';
+						break;
 				}
 			});
 			Deals.filter(Query.filter);
