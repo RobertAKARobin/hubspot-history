@@ -8,7 +8,7 @@ var Deals = (function(){
 		properties: [],
 		propertiesByName: {},
 		propertiesRequested: {},
-		defaultPropertyNames: ['dealname', 'createdate', 'dealstage'],
+		defaultPropertyNames: ['dealname', 'dealstage'],
 		calculations: {}
 	};
 	

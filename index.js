@@ -55,7 +55,6 @@ httpServer
 			var acceptableProperties = {};
 			var requestedProperties = Array._fromCSV(req.query.properties)
 				._addIfDoesNotInclude('dealname')
-				._addIfDoesNotInclude('createdate')
 				._addIfDoesNotInclude('dealstage');
 			Object.values(requestedProperties).forEach(function(propertyName){
 				if(allProperties[propertyName]){

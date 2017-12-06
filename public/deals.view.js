@@ -103,7 +103,7 @@ var DealsView = (function(){
 			return m('tr.headerRow', [
 				m('th', {
 					title: 'dealId'
-				}, '#'),
+				}, 'ID'),
 				Object.values(Deals.propertiesRequested).map(function(property){
 					return m('th', {
 						title: property.name,
@@ -135,13 +135,13 @@ var DealsView = (function(){
 				})
 			])
 		},
-		dataRow: function(deal, dealIndex){
+		dataRow: function(deal){
 			return m('tr.dataRow', [
 				m('td', [
 					m('a.idlink', {
 						title: 'dealId',
 						href: 'https://app.hubspot.com/sales/' + HubspotPortalID + '/deal/' + deal.dealId
-					}, dealIndex + 1)
+					}, deal.dealId)
 				]),
 				Object.values(Deals.propertiesRequested).map(views.dataColumn(deal))
 			])
