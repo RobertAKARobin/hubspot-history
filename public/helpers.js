@@ -106,6 +106,27 @@ Array.prototype._removeNonNumbers = function(){
 		return tester.test((value || '').toString());
 	});
 }
+Array.prototype._next = function(item){
+	var array = this;
+	var itemIndex = array.indexOf(item);
+	if(itemIndex < 0){
+		return undefined;
+	}else if(itemIndex >= array.length - 1){
+		return array[0];
+	}else{
+		return array[itemIndex + 1];
+	}
+}
+Array.prototype._indexAfter = function(index){
+	var array = this;
+	if(array.length == 0){
+		return undefined;
+	}else if(index < 0 || index >= array.length - 1){
+		return 0;
+	}else{
+		return index + 1;
+	}
+}
 Date.prototype._toPrettyString = function(){
 	var date = this;
 	return [
@@ -141,7 +162,7 @@ Math._median = function(array){
 }
 Math._mode = function(array){
 	var values = array.sort()._removeNonNumbers();
-	return values._mode();
+	return parseFloat(values._mode());
 }
 Object.defineProperty(Object.prototype, '_merge', {
 	enumerable: false,

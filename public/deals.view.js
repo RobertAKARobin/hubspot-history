@@ -1,6 +1,13 @@
 'use strict';
 
 var DealsView = (function(){
+	var calcTypes = [
+		'sum',
+		'mean',
+		'median',
+		'mode'
+	]
+
 	var views = {
 		filterRow: function(){
 			return m('tr.filterRow', [
@@ -59,6 +66,22 @@ var DealsView = (function(){
 				])
 			])
 		},
+		formatValueByProperty: function(value, property){
+			switch(property.type){
+				case 'currency':
+					value = (parseFloat(value) || 0)._toDollars();
+					break;
+				case 'number':
+					value = (parseFloat(value) || 0).toString().replace(/(\.[0-9]{2}).*$/, '$1');
+					break;
+			}
+			return value;
+		},
+		calculate: function(property){
+			var calcType = (state.calcTypes[property.name] || 'sum');
+			var value = Deals.calculations[property.name][calcType];
+			return (views.formatValueByProperty(value, property))
+		},
 		headerTitlesRow: function(isClickable){
 			return m('tr.headerRow', [
 				m('th', {
@@ -84,13 +107,11 @@ var DealsView = (function(){
 						}, property.label),
 						(
 							property.type == 'number' || property.type == 'currency'
-							? m('span.sum',
-								(
-									property.type == 'currency'
-									? Deals.calculations[property.name].sum._toDollars()
-									: Deals.calculations[property.name].sum.toString()
-								)
-							)
+							? m('span.calc', {
+								onclick: (isClickable ? function(event){
+									state.calcTypes[property.name] = calcTypes._next(state.calcTypes[property.name]);
+								} : false)
+							}, state.calcTypes[property.name] + ': ' + views.calculate(property))
 							: null
 						)
 					])
@@ -111,17 +132,9 @@ var DealsView = (function(){
 		dataColumn: function(deal){
 			return function(property){
 				var value = deal[property.name];
-				switch(property.type){
-					case 'currency':
-						value = (parseFloat(value) || 0)._toDollars();
-						break;
-					case 'number':
-						value = (parseFloat(value) || 0).toString();
-						break;
-				}
 				return m('td', {
 					'data-propertyType': property.type,
-				}, value);
+				}, views.formatValueByProperty(value, property));
 			}
 		},
 		Main: function(){

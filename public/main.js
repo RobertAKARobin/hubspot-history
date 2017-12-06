@@ -28,7 +28,8 @@ var state = {
 	sortProperty: false,
 	sortDirection: false,
 	filterError: false,
-	enteredFilter: Query.filter
+	enteredFilter: Query.filter,
+	calcTypes: {}
 }
 
 var addPropertyToQueryString = function(event){
@@ -66,7 +67,12 @@ var API = {
 			HubspotPortalID = response.hubspotPortalID;
 			Deals.propertiesRequested = response.requestedProperties;
 			Deals.all = Object.values(response.deals);
-			Object.values(Deals.propertiesRequested).forEach(Deals.formatProperty);
+			Object.values(Deals.propertiesRequested).forEach(function(property){
+				Deals.formatProperty(property);
+				if(property.type == 'number' || property.type == 'currency'){
+					state.calcTypes[property.name] = 'sum';
+				}
+			});
 			Deals.filter(Query.filter);
 			state.dealsLoadingStatus = 2;
 		}).catch(function(error){

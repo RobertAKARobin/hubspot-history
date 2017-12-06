@@ -257,11 +257,11 @@ tr > :last-child{
 th .title{
 	cursor:pointer;
 }
-th .sum,
+th .calc,
 th .title{
 	display:block;
 }
-th .sum{
+th .calc{
 	text-decoration:underline;
 	cursor:pointer;
 }
