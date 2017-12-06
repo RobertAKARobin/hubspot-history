@@ -56,9 +56,12 @@ var Deals = (function(){
 	}
 	Deals.formatProperty = function(property){
 		var propertyName = property.name;
-		if(property.type == 'datetime'){
+		if(property.type == 'datetime' || property.type == 'date'){
 			Deals.all.forEach(function(deal){
-				deal[propertyName] = (new Date(parseInt(deal[propertyName])))._toPrettyString();
+				var value = parseInt(deal[propertyName]);
+				if(value){
+					deal[propertyName] = (new Date(value))._toPrettyString();
+				}
 			});
 		}else if(property.type == 'number' || property.type == 'currency'){
 			Deals.all.forEach(function(deal){
