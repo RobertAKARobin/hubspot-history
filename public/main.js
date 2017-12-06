@@ -19,7 +19,8 @@ var Query = {
 	properties: (Location.query().properties ? Location.query().properties.split(',') : []),
 	limitToFirst: (Location.query().limitToFirst || false),
 	includeHistory: (Location.query().includeHistory || false),
-	filter: (Location.query().filter || null)
+	filter: (Location.query().filter || null),
+	autoload: (Location.query().autoload || false)
 }
 
 var state = {
@@ -99,6 +100,9 @@ var API = {
 					return (item.label || item.name);
 				});
 				state.propertiesLoadingStatus = 2;
+				if(Query.autoload){
+					API.getDeals();
+				}
 			}
 		});
 	}
