@@ -1,6 +1,17 @@
 'use strict';
 
 var DealsView = (function(){
+
+	var handleFilterError = function(error){
+		switch(error.name){
+			case 'NoPropertyError':
+				state.filterError = "In order to filter on '" + error.property + "' it must be one of the \"selected properties.\"";
+				break;
+			default:
+				state.filterError = "Your filter has an error. Make sure to begin each property with '$'. For example, \"$amount = 1000.\"";
+		}
+	}
+
 	var calcTypes = [
 		'sum',
 		'mean',
@@ -9,6 +20,33 @@ var DealsView = (function(){
 	]
 
 	var views = {
+		filterInput: function(){
+			return m('input', {
+				id: 'filter',
+				value: state.enteredFilter,
+				placeholder: 'Enter filter...',
+				hasError: !!(state.filterError),
+				spellcheck: false,
+				onkeyup: function(event){
+					var isReturn = (event.keyCode == 13);
+					var filterString = event.target.value;
+					state.filterError = false;
+					state.enteredFilter = filterString;
+					if(isReturn){
+						event.preventDefault();
+						try{
+							Deals.filter(filterString);
+							Query.filter = filterString;
+							updateQueryString();
+							state.sortProperty = null;
+							state.sortDirection = null;
+						}catch(error){
+							handleFilterError(error);
+						}
+					}
+				}
+			});
+		},
 		filterRow: function(){
 			return m('tr.filterRow', [
 				m('td', {
@@ -21,11 +59,11 @@ var DealsView = (function(){
 								'data-hasTooltip': true
 							}, 'Filter on:'),
 							m('span.tooltip', [
-								"Filters are case-sensitive.",
-								"Each property must begin with $.",
+								"Filter using the names of the properties you selected. Each property name must begin with '$'.",
+								"Property *names* contain no spaces or punctuation except underscore. You can filter only using property *names*, which are shown in parentheses next to their *labels*.",
 								"Math operators are >, <, =, ≠, ≥, and ≤.",
 								"Logical operators are AND, OR, and NOT.",
-								"Use HAS to filter on text that contains other text.",
+								"Use HAS to search for text that contains other text.",
 								"Wrap everything but integers in 'quotes.'",
 								"",
 								"For example:",
@@ -37,31 +75,10 @@ var DealsView = (function(){
 								"$amount > 5000 and not ($dealstage = 'Lost')"
 							].join('\n'))
 						]),
-						m('input', {
-							id: 'filter',
-							value: state.enteredFilter,
-							placeholder: 'Enter filter...',
-							hasError: !!(state.filterError),
-							spellcheck: false,
-							onkeyup: function(event){
-								var isReturn = (event.keyCode == 13);
-								var filterString = event.target.value;
-								state.filterError = false;
-								state.enteredFilter = filterString;
-								if(isReturn){
-									event.preventDefault();
-									try{
-										Deals.filter(filterString);
-										Query.filter = filterString;
-										updateQueryString();
-										state.sortProperty = null;
-										state.sortDirection = null;
-									}catch(e){
-										state.filterError = true;
-									}
-								}
-							}
-						})
+						m('div.input', [
+							views.filterInput(),
+							m('p[isError]', state.filterError)
+						])
 					])
 				])
 			])

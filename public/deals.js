@@ -14,12 +14,25 @@ var Deals = (function(){
 	
 	Deals.filter = function(filterString){
 		var quotes = [];
-		filterString = (filterString || '');
+		filterString = (filterString || '').replace(/(".*?[^\\]"|'.*?[^\\]')/g, function(match){
+			quotes.push(match);
+			return '%%%%';
+		});
+
+		var requestedPropertyNames = Object.keys(Deals.propertiesRequested);
+		var propertyMatcher = /\$([^\s]*)/g;
+		var filterProperty = propertyMatcher.exec(filterString);
+		while(filterProperty){
+			if(!requestedPropertyNames.includes(filterProperty[1])){
+				throw({
+					name: 'NoPropertyError',
+					property: filterProperty[1]
+				});
+			}
+			filterProperty = propertyMatcher.exec(filterString);
+		}
+
 		filterString = filterString
-			.replace(/(".*?[^\\]"|'.*?[^\\]')/g, function(match){
-				quotes.push(match);
-				return '%%%%';
-			})
 			.replace(/\$/g, 'deal.')
 			.replace(/alert\(.*?\)|confirm\(.*?\)|prompt\(.*?\)/g, '')
 			.replace(/\bAND\b/gi, '&&')
@@ -36,6 +49,7 @@ var Deals = (function(){
 				return quotes.shift();
 			});
 		console.log(filterString)
+
 
 		var filterFunction  = new Function('deal', 'return ' + (filterString || 'true'));
 		Deals.allFiltered = Deals.all.filter(filterFunction);
