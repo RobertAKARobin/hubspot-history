@@ -34,15 +34,12 @@ var DealsView = (function(){
 					state.enteredFilter = filterString;
 					if(isReturn){
 						event.preventDefault();
-						try{
-							Deals.filter(filterString);
-							Query.filter = filterString;
-							updateQueryString();
-							state.sortProperty = null;
-							state.sortDirection = null;
-						}catch(error){
-							displayFilterError(error);
-						}
+						Query.filter = filterString;
+						updateQueryString();
+						state.sortProperty = null;
+						state.sortDirection = null;
+					}else{
+						event.redraw = false;
 					}
 				}
 			});
