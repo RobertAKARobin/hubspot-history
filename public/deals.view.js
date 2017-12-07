@@ -2,16 +2,6 @@
 
 var DealsView = (function(){
 
-	var displayFilterError = function(error){
-		switch(error.name){
-			case 'NoPropertyError':
-				state.filterError = "In order to filter on '" + error.property + "' it must be one of the \"selected properties.\"";
-				break;
-			default:
-				state.filterError = "Your filter has an error. Make sure to begin each property with '$'. For example, \"$amount = 1000.\"";
-		}
-	}
-
 	var calcTypes = [
 		'sum',
 		'avg',
@@ -35,6 +25,11 @@ var DealsView = (function(){
 					if(isReturn){
 						event.preventDefault();
 						Query.filter = filterString;
+						try{
+							Deals.filter(Query.filter || '');
+						}catch(error){
+							displayFilterError(error);
+						}
 						updateQueryString();
 						state.sortProperty = null;
 						state.sortDirection = null;
@@ -186,12 +181,6 @@ var DealsView = (function(){
 		},
 		view: function(){
 			if(state.dealsLoadingStatus == 2){
-				try{
-					Deals.filter(Query.filter || '');
-				}catch(error){
-					Deals.filter('');
-					displayFilterError(error);
-				}
 				return views.Main();
 			}else{
 				return m('div.dealLoadStatus', statusMessages[state.dealsLoadingStatus]);

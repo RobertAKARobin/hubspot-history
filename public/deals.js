@@ -48,7 +48,7 @@ var Deals = (function(){
 			.replace(/%%%%/g, function(){
 				return quotes.shift();
 			});
-		console.log(filterString)
+		console.log('Filter string:\n' + filterString)
 
 
 		var filterFunction  = new Function('deal', 'return ' + (filterString || 'true'));

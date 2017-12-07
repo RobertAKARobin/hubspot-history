@@ -43,6 +43,15 @@ var updateQueryString = function(){
 	qs.properties = Query.properties.join(',');
 	Location.query(qs, true);
 }
+var displayFilterError = function(error){
+	switch(error.name){
+		case 'NoPropertyError':
+			state.filterError = "In order to filter on '" + error.property + "' it must be one of the \"selected properties.\"";
+			break;
+		default:
+			state.filterError = "Your filter has an error. Make sure to begin each property with '$'. For example, \"$amount = 1000.\"";
+	}
+}
 
 var API = {
 	getDeals: function(){
@@ -69,6 +78,12 @@ var API = {
 						break;
 				}
 			});
+			try{
+				Deals.filter(Query.filter || '');
+			}catch(error){
+				Deals.filter('');
+				displayFilterError(error);
+			}
 			state.dealsLoadingStatus = 2;
 		}).catch(function(error){
 			state.dealsLoadingStatus = 3;
