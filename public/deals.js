@@ -73,13 +73,17 @@ var Deals = (function(){
 		if(property.type == 'datetime' || property.type == 'date'){
 			Deals.all.forEach(function(deal){
 				var value = parseInt(deal[propertyName]);
-				if(value){
-					deal[propertyName] = (new Date(value))._toPrettyString();
-				}
+				deal[propertyName] = (value ? (new Date(value))._toPrettyString() : '');
 			});
 		}else if(property.type == 'number' || property.type == 'currency'){
 			Deals.all.forEach(function(deal){
-				deal[propertyName] = (parseFloat(deal[propertyName]) || undefined);
+				var value = parseFloat(deal[propertyName]);
+				deal[propertyName] = (value || 0);
+			});
+		}else{
+			Deals.all.forEach(function(deal){
+				var value = deal[propertyName];
+				deal[propertyName] = (value || '');
 			});
 		}
 	}
