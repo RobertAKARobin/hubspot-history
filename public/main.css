@@ -56,6 +56,7 @@ p, label, button, select, .select{
 	padding-left:10px;
 }
 label{
+	display:block;
 	cursor:pointer;
 }
 select{
@@ -225,6 +226,11 @@ tr > :last-child{
 }
 .select .paren:after{
 	content:')';
+}
+input[type=checkbox]{
+	display:inline-block;
+	width:auto;
+	margin-right:10px;
 }
 
 [data-isHidden]{

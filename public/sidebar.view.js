@@ -1,6 +1,17 @@
 'use strict';
 
 var SidebarView = (function(){
+	var addPropertyToQueryString = function(event){
+		var property = this;
+		Query.properties._addIfDoesNotInclude(property.name);
+		updateQueryString();
+	}
+	var removePropertyFromQueryString = function(event){
+		var property = this;
+		Query.properties._remove(property.name);
+		updateQueryString();
+	}
+
 	var views = {
 		selectablePropertyRow: function(property){
 			return m('tr', [
@@ -46,7 +57,31 @@ var SidebarView = (function(){
 				]),
 				m('button', {
 					onclick: API.getDeals
-				}, 'Load')
+				}, 'Load'),
+				m('label', [
+					m('input[type=checkbox]', {
+						checked: Query.autoload,
+						onchange: function(event){
+							var element = this;
+							var isChecked = !(element.checked);
+							Query.autoload = (isChecked ? 1 : false);
+							updateQueryString();
+						}
+					}),
+					"Load deals when this webpage loads"
+				]),
+				m('label', [
+					m('input[type=checkbox]', {
+						checked: Query.limitToFirst,
+						onchange: function(event){
+							var element = this;
+							var isChecked = !!(element.checked);
+							Query.limitToFirst = (isChecked ? 1 : false);
+							updateQueryString();
+						}
+					}),
+					"Load only the first 250 results"
+				])
 			]
 		}
 	}

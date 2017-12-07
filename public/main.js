@@ -33,16 +33,6 @@ var state = {
 	calcTypes: {}
 }
 
-var addPropertyToQueryString = function(event){
-	var property = this;
-	Query.properties._addIfDoesNotInclude(property.name);
-	updateQueryString();
-}
-var removePropertyFromQueryString = function(event){
-	var property = this;
-	Query.properties._remove(property.name);
-	updateQueryString();
-}
 var updateQueryString = function(){
 	var qs = {};
 	for(var propertyName in Query){
