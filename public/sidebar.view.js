@@ -63,7 +63,7 @@ var SidebarView = (function(){
 						checked: Query.autoload,
 						onchange: function(event){
 							var element = this;
-							var isChecked = !(element.checked);
+							var isChecked = !!(element.checked);
 							Query.autoload = (isChecked ? 1 : false);
 							updateQueryString();
 						}
