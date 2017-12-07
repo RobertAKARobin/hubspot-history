@@ -59,8 +59,7 @@ var DealsView = (function(){
 								'data-hasTooltip': true
 							}, 'Filter on:'),
 							m('span.tooltip', [
-								"Filter using the names of the properties you selected. Each property name must begin with '$'.",
-								"Property *names* contain no spaces or punctuation except underscore. You can filter only using property *names*, which are shown in parentheses next to their *labels*.",
+								"Filter using the properties you selected. Each property must begin with '$'.",
 								"Math operators are >, <, =, ≠, ≥, and ≤.",
 								"Logical operators are AND, OR, and NOT.",
 								"Use HAS to search for text that contains other text.",
@@ -103,7 +102,7 @@ var DealsView = (function(){
 			return m('tr.headerRow', [
 				m('th', {
 					title: 'dealId'
-				}, 'ID'),
+				}, '$dealId'),
 				Object.values(Deals.propertiesRequested).map(function(property){
 					return m('th', {
 						title: property.name,
@@ -121,7 +120,7 @@ var DealsView = (function(){
 									Deals.allFiltered.reverse();
 								}
 							 } : false)
-						}, property.label),
+						}, '$' + property.name),
 						(
 							property.type == 'number' || property.type == 'currency'
 							? m('span.calc', {

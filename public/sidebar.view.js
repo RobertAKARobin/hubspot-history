@@ -10,7 +10,7 @@ var SidebarView = (function(){
 					title: property.name
 				}, [
 					property.label,
-					m('span.paren', property.name)
+					m('span.paren', '$' + property.name)
 				])
 			])
 		},
@@ -25,23 +25,23 @@ var SidebarView = (function(){
 						onclick: (isDefaultDealProperty ? null : removePropertyFromQueryString.bind(property))
 					}, [
 						property.label,
-						m('span.paren', property.name)
+						m('span.paren', '$' + property.name)
 					])
 				])
 			}
 		},
 		Main: function(){
 			return [
-				m('p', "Select properties:"),
-				m('div.select', [
-					m('table', [
-						Deals.properties.map(views.selectablePropertyRow)
-					])
-				]),
-				m('p', "De-select properties:"),
+				m('p', "Selected:"),
 				m('div.select', [
 					m('table', [
 						Deals.defaultPropertyNames.concat(Query.properties).map(views.nonSelectablePropertyRow)
+					])
+				]),
+				m('p', "Not selected:"),
+				m('div.select', [
+					m('table', [
+						Deals.properties.map(views.selectablePropertyRow)
 					])
 				]),
 				m('button', {
