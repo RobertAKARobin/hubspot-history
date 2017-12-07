@@ -2,7 +2,7 @@
 
 var DealsView = (function(){
 
-	var handleFilterError = function(error){
+	var displayFilterError = function(error){
 		switch(error.name){
 			case 'NoPropertyError':
 				state.filterError = "In order to filter on '" + error.property + "' it must be one of the \"selected properties.\"";
@@ -41,7 +41,7 @@ var DealsView = (function(){
 							state.sortProperty = null;
 							state.sortDirection = null;
 						}catch(error){
-							handleFilterError(error);
+							displayFilterError(error);
 						}
 					}
 				}
@@ -189,6 +189,12 @@ var DealsView = (function(){
 		},
 		view: function(){
 			if(state.dealsLoadingStatus == 2){
+				try{
+					Deals.filter(Query.filter || '');
+				}catch(error){
+					Deals.filter('');
+					displayFilterError(error);
+				}
 				return views.Main();
 			}else{
 				return m('div.dealLoadStatus', statusMessages[state.dealsLoadingStatus]);

@@ -69,7 +69,6 @@ var API = {
 						break;
 				}
 			});
-			Deals.filter(Query.filter);
 			state.dealsLoadingStatus = 2;
 		}).catch(function(error){
 			state.dealsLoadingStatus = 3;
