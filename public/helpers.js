@@ -134,7 +134,7 @@ Date.prototype._toPrettyString = function(){
 		'/',
 		(date.getMonth() + 1)._leftpad(2),
 		'/',
-		date.getDay()._leftpad(2),
+		date.getDate()._leftpad(2),
 		' ',
 		date.getHours()._leftpad(2),
 		':',
